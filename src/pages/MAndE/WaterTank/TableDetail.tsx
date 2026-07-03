@@ -225,31 +225,53 @@ const TableDetail: React.FC<TableDetailProps> = ({
       >
         {filteredFiles?.length ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {(filteredFiles as FileItem[]).map((file, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center gap-2 border rounded-lg p-2"
-              >
-                {file.file_url.toLowerCase().endsWith(".pdf") ? (
-                  <IconFile size={48} className="text-red-500" />
-                ) : (
-                  <img
-                    src={file.file_url}
-                    alt={file.name}
-                    className="w-full h-32 object-cover rounded"
-                  />
-                )}
+            {(filteredFiles as FileItem[]).map((file, i) => {
+              const fileUrl = String(file.file_url ?? "");
+              const fileName = String(
+                file.name ?? file.file_name ?? "Download file",
+              );
+              const filePath = (`${fileUrl} ${fileName}`.split("?")[0] ?? "")
+                .toLowerCase();
+              const isImage = /\.(png|jpe?g|gif|webp|bmp|svg)$/.test(filePath);
+              const isPdf = /\.pdf$/.test(filePath);
 
-                <a
-                  href={file.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-600 underline truncate w-full text-center"
+              return (
+                <div
+                  key={i}
+                  className="flex flex-col items-center gap-2 border rounded-lg p-2"
                 >
-                  {file.name}
-                </a>
-              </div>
-            ))}
+                  {isImage ? (
+                    <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={fileUrl}
+                        alt={fileName}
+                        className="w-full h-32 object-cover rounded"
+                      />
+                    </a>
+                  ) : (
+                    <div className="flex h-32 w-full flex-col items-center justify-center rounded bg-gray-50 text-gray-500">
+                      <IconFile
+                        size={48}
+                        className={isPdf ? "text-red-500" : "text-green-600"}
+                      />
+                      <span className="mt-2 text-xs">
+                        {isPdf ? "PDF File" : "Attachment"}
+                      </span>
+                    </div>
+                  )}
+
+                  <a
+                    href={fileUrl}
+                    download={!isImage ? fileName : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 underline truncate w-full text-center"
+                  >
+                    {fileName}
+                  </a>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p className="text-center text-gray-400 text-sm">
