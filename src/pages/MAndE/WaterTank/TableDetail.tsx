@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import type {
   FileItem,
   meWaterTankDataType,
@@ -25,13 +25,19 @@ const TableDetail: React.FC<TableDetailProps> = ({
   const { refreshNotifications } = useContext(NotificationContext);
   const [activeWaterTankId, setActiveWaterTankId] = useState<number | string | null>();
   const waterTankList = detailData?.detailData;
+  const navigate = useNavigate();
+  const safeWaterTankList = Array.isArray(waterTankList)
+    ? (waterTankList as meWaterTankDataType[])
+    : [];
+
   console.log("Water Tank List>>", waterTankList);
   const files = detailData?.files;
   const generalForm = detailData?.generalForm;
   const authUserId = detailData?.authUserId;
   const [fileOpened, { open: openFileModal, close: closeFileModal }] =
     useDisclosure(false);
-  const navigate = useNavigate();
+
+
   const handleDelete = async (
     generalFormID?: string | number,
     formId?: string | number,
@@ -63,12 +69,12 @@ const TableDetail: React.FC<TableDetailProps> = ({
         showConfirmButton: false,
       });
       console.log("Water Tank List after deletion>>", waterTankList);
-      if ((waterTankList as number[]).length <= 1) {
-        await refreshNotifications();
-        navigate(`/panel/${formId}`);
-      } else {
-        onRefresh();
-      }
+      sessionStorage.removeItem("watertank_cache");
+      await refreshNotifications();
+      navigate(`/water-tank/${detailData?.subForm?.sub_form_id ?? 8}`, {
+        replace: true,
+        state: { refresh: true },
+      });
     } catch {
       Swal.fire("Error", "Delete failed", "error");
     } finally {
@@ -97,8 +103,8 @@ const TableDetail: React.FC<TableDetailProps> = ({
       "Image",
     ],
 
-    body: (waterTankList as meWaterTankDataType[]).length
-      ? (waterTankList as meWaterTankDataType[]).map((element, index) => [
+    body: safeWaterTankList.length
+      ? safeWaterTankList.map((element, index) => [
           index + 1,
           <Group gap="xs" key={`action-${element.id}`}>
             {generalForm?.status == "Default" &&

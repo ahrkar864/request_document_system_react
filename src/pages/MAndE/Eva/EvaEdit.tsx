@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import {
   type FileItem,
   type meEvaDataType,
-  type meSolarDataType,
 } from "../../../utils/meDataUtil/metype";
 import Swal from "sweetalert2";
 import FullPageLoader from "../../../components/FullPageLoader";
@@ -14,11 +13,6 @@ import cctvPhoto from "../../../assets/images/ban1.png";
 import NavPath from "../../../components/NavPath";
 import { fetchData } from "../../../api/FetchApi";
 import { IconFile, IconFileText, IconX } from "@tabler/icons-react";
-import {
-  getUpdateSolarData,
-  solarEditData,
-  solarFileDelete,
-} from "../../../api/ME/solar";
 import {
   evaEditData,
   evaFileDelete,

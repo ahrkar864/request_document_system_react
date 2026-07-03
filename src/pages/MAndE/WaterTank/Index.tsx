@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import NavPath from "../../../components/NavPath";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MultiSelect, Pagination, Select, Table, Loader } from "@mantine/core";
 import type { indexData, metaData } from "../../../utils/requestDiscountUtil";
 
@@ -19,6 +19,7 @@ import { getWaterTankData, searchWaterTankData } from "../../../api/ME/WaterTank
 
 const WaterTankIndex: React.FC = () => {
   const formId = 8;
+  const location = useLocation();
 
   const [waterTankData, setWaterTankData] = useState<{
     meta?: metaData;
@@ -54,7 +55,10 @@ const WaterTankIndex: React.FC = () => {
     const cached = sessionStorage.getItem("watertank_cache");
     const token = localStorage.getItem("token");
     if (!token) return;
-    if (cached) {
+    if (location.state?.refresh) {
+      sessionStorage.removeItem("watertank_cache");
+      fetchData();
+    } else if (cached) {
       const parsed = JSON.parse(cached);
       getWaterTankData(token)
         .then((data) => {
@@ -77,7 +81,7 @@ const WaterTankIndex: React.FC = () => {
     } else {
       fetchData();
     }
-  }, []);
+  }, [location.state]);
 
   const fetchData = async () => {
     const token = localStorage.getItem("token");

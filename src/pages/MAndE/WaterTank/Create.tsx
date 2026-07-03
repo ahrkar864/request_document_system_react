@@ -195,6 +195,7 @@ const { formId, reAdd, waterTankFormId } = location.state || {};
         const token = localStorage.getItem("token");
 
         await storeWaterTankData(token, formData);
+        sessionStorage.removeItem("watertank_cache");
 
         Swal.fire({
           icon: "success",
@@ -203,7 +204,7 @@ const { formId, reAdd, waterTankFormId } = location.state || {};
         });
 
         formElement.reset();
-        navigate(-1);
+        navigate(`/water-tank/${formId}`, { state: { refresh: true } });
         
       } catch (error: any) {
         console.log("Full error:", error);

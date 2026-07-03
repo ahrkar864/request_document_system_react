@@ -79,7 +79,7 @@ export const searchWaterTankData = async (
   }
 ) => {
   try {
-    const response = await API.get("me/water-tank/searchData", {
+    const response = await API.get("me/water-tank/search", {
       params,
       headers: { Authorization: `Bearer ${token}` },
     });

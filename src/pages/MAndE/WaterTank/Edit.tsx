@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Loader, Menu } from "@mantine/core";
 import { IconFile, IconFileText, IconX } from "@tabler/icons-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { v4 as uuidv4 } from "uuid";
 import { FaStar } from "react-icons/fa";
@@ -45,6 +45,9 @@ const WaterTankEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const generalForm = location.state?.generalForm;
+
   const [existingFiles, setExistingFiles] = useState<FileItem[]>([]);
   const [invoiceFile, setInvoiceFile] = useState<FileItem[]>([
     { id: uuidv4(), file: null, preview: null, type: null, name: null },
@@ -227,6 +230,7 @@ const WaterTankEdit: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       await updateWaterTankData(token, formData, id);
+      sessionStorage.removeItem("watertank_cache");
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -321,6 +325,13 @@ const WaterTankEdit: React.FC = () => {
               </div>
             </div>
 
+                 <input
+                type="hidden"
+                name="general_form_id"
+                id=""
+                value={generalForm?.id}
+              />
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {selectFields.map(([name, label]) => (
                 <div key={name}>
@@ -404,90 +415,93 @@ const WaterTankEdit: React.FC = () => {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2">
-              {invoiceFile.map((fileField, index) => (
-                <div key={fileField.id} className="flex flex-col gap-2 w-full">
-                  <div className="flex items-center gap-2">
-                    <label>{index === 0 ? "Upload(Max uploads file 4)" : undefined}</label>
-                    {index === 0 && !existingFiles.length && (
-                      <FaStar className="text-red-400" />
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="file"
-                      name="file[]"
-                      onChange={(e) =>
-                        updateFile(fileField.id, e.target.files?.[0])
-                      }
-                      className="hidden sm:hidden md:block flex-1 border p-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
-                      style={{ borderColor: "rgb(29, 137, 225)" }}
-                    />
-
-                    <div className="flex-1 block md:hidden">
-                      <Menu shadow="md" width={200}>
-                        <Menu.Target>
-                          <div
-                            className="border p-2 w-full rounded-md cursor-pointer bg-white flex justify-between items-center text-sm"
-                            style={{ borderColor: "rgb(29, 137, 225)" }}
-                          >
-                            {fileField.name ? (
-                              <Text>{fileField.name}</Text>
-                            ) : (
-                              <Text color="dimmed">Tap to upload...</Text>
-                            )}
-                          </div>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Label>Choose Source</Menu.Label>
-                          <Menu.Item
-                            onClick={() =>
-                              handleCaptureChoice(fileField.id, "camera")
-                            }
-                          >
-                            Take Photo (Camera)
-                          </Menu.Item>
-                          <Menu.Item
-                            onClick={() =>
-                              handleCaptureChoice(fileField.id, "gallery")
-                            }
-                          >
-                            Choose from Gallery
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
+              <div className="flex flex-col gap-2 w-full">
+                {invoiceFile.map((fileField, index) => (
+                  <div key={fileField.id} className="flex flex-col gap-2 w-full">
+                    <div className="flex items-center gap-2 min-h-6">
+                      <label>
+                        {index === 0 ? "Upload(Max uploads file 4)" : undefined}
+                      </label>
+                      {index === 0 && !existingFiles.length && (
+                        <FaStar className="text-red-400" />
+                      )}
                     </div>
 
-                    {index === 0 && invoiceFile.length <= 3 ? (
-                      <Button type="button" onClick={addInvoiceFile}>
-                        Add
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        color="red"
-                        onClick={() => removeInvoiceFile(fileField.id)}
-                      >
-                        <IconX size={16} />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="file"
+                        name="file[]"
+                        onChange={(e) =>
+                          updateFile(fileField.id, e.target.files?.[0])
+                        }
+                        className="hidden sm:hidden md:block flex-1 border p-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
+                        style={{ borderColor: "rgb(29, 137, 225)" }}
+                      />
 
-              <div className="flex flex-wrap gap-3 mt-2">
-                {invoiceFile
-                  .filter((file) => file.file)
-                  .map((fileField) => (
-                    <div
-                      key={`preview-${fileField.id}`}
-                      className="w-40 p-2 border rounded-md flex items-center justify-center"
-                    >
-                      {fileField.type === "image" && (
-                        <a
-                          href={fileField.preview ?? ""}
-                          target="_blank"
-                          rel="noreferrer"
+                      <div className="flex-1 block md:hidden">
+                        <Menu shadow="md" width={200}>
+                          <Menu.Target>
+                            <div
+                              className="border p-2 w-full rounded-md cursor-pointer bg-white flex justify-between items-center text-sm"
+                              style={{ borderColor: "rgb(29, 137, 225)" }}
+                            >
+                              {fileField.name ? (
+                                <Text>{fileField.name}</Text>
+                              ) : (
+                                <Text color="dimmed">Tap to upload...</Text>
+                              )}
+                            </div>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Label>Choose Source</Menu.Label>
+                            <Menu.Item
+                              onClick={() =>
+                                handleCaptureChoice(fileField.id, "camera")
+                              }
+                            >
+                              Take Photo (Camera)
+                            </Menu.Item>
+                            <Menu.Item
+                              onClick={() =>
+                                handleCaptureChoice(fileField.id, "gallery")
+                              }
+                            >
+                              Choose from Gallery
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </div>
+
+                      {index === 0 && invoiceFile.length <= 3 ? (
+                        <Button type="button" onClick={addInvoiceFile}>
+                          Add
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          color="red"
+                          onClick={() => removeInvoiceFile(fileField.id)}
+                        >
+                          <IconX size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {invoiceFile
+                    .filter((file) => file.file)
+                    .map((fileField) => (
+                      <div
+                        key={`preview-${fileField.id}`}
+                        className="w-40 p-2 border rounded-md flex items-center justify-center"
+                      >
+                        {fileField.type === "image" && (
+                          <a
+                            href={fileField.preview ?? ""}
+                            target="_blank"
+                            rel="noreferrer"
                         >
                           <img
                             src={fileField.preview ?? ""}
@@ -520,6 +534,7 @@ const WaterTankEdit: React.FC = () => {
                     </div>
                   ))}
               </div>
+            </div>
             </div>
 
             <div className="flex lg:justify-center md:justify-center gap-4 lg:gap-12 md:gap-12 flex-wrap">
