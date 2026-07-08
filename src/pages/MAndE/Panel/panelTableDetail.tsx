@@ -1,31 +1,31 @@
 import React, { useContext, useState } from "react";
 import type {
   FileItem,
-  meSolarDataType,
+  mePanelDataType,
   TableDetailProps,
 } from "../../../utils/meDataUtil/metype";
 import { NotificationContext } from "../../../context/NotificationContext";
 import { useDisclosure } from "@mantine/hooks";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { transformerDelete } from "../../../api/ME/Transformer/transformer";
 import { Button, Group, Modal, Table, type TableData } from "@mantine/core";
 import { IconEdit, IconFile, IconTrash } from "@tabler/icons-react";
 import {
   dateFormat,
   numberFormat,
 } from "../../../utils/requestDiscountUtil/helper";
-import { solarDelete } from "../../../api/ME/solar";
+import { panelDelete } from "../../../api/ME/panel/panel";
 
-const SolarTableDetail: React.FC<TableDetailProps> = ({
+const PanelTableDetail: React.FC<TableDetailProps> = ({
   detailData,
   onRefresh,
   loading,
   setLoading,
 }) => {
   const { refreshNotifications } = useContext(NotificationContext);
-  const [activeSolarId, setActiveSolarId] = useState<number | string | null>();
-  const solarList = detailData?.detailData;
+  const [activePanelId, setActivePanelId] = useState<number | string | null>();
+  const panelList = detailData?.detailData;
+  console.log("Panel List>>", panelList);
   const files = detailData?.files;
   const generalForm = detailData?.generalForm;
   const authUserId = detailData?.authUserId;
@@ -54,7 +54,7 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
     setLoading(true);
 
     try {
-      const res = await solarDelete(token, generalFormID, formId);
+      const res = await panelDelete(token, generalFormID, formId);
 
       Swal.fire({
         icon: "success",
@@ -62,9 +62,10 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
         timer: 1200,
         showConfirmButton: false,
       });
-      if ((solarList as number[]).length <= 1) {
+      console.log("Panel List after deletion>>", panelList);
+      if ((panelList as number[]).length <= 1) {
         await refreshNotifications();
-        navigate(`/solar/${formId}`);
+        navigate(`/panel/${formId}`);
       } else {
         onRefresh();
       }
@@ -86,29 +87,28 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
       "L1",
       "L2",
       "L3",
-      <div className="whitespace-nowrap">Voltage L-L</div>,
-      // <div className="whitespace-nowrap">Solar Size</div>,
-      <div className="whitespace-nowrap">Total Solar Output Kw</div>,
-      <div className="whitespace-nowrap">Average Battery (%)</div>,
-      <div className="whitespace-nowrap">Grid KW Use</div>,
+      <div className="whitespace-nowrap">Breaker Temperature</div>,
       <div className="whitespace-nowrap">Total Load KW Use</div>,
-      <div className="whitespace-nowrap">Solar Unit</div>,
-      <div className="whitespace-nowrap">Inverter Check</div>,
-      <div className="whitespace-nowrap">Battery Check</div>,
-      <div className="whitespace-nowrap">SDP Panel temp Check</div>,
-      <div className="whitespace-nowrap">Panel Cleaning Date</div>,
+      <div className="whitespace-nowrap">Voltage L-L</div>,
+      <div className="whitespace-nowrap">Panel Cleaning Maintenance</div>,
+      <div className="whitespace-nowrap">Breaker Maintenance</div>,
+      <div className="whitespace-nowrap">
+        Lighting & Power Source Maintenance
+      </div>,
+      <div className="whitespace-nowrap">LED Light Box Power</div>,
       "Remark",
       "Image",
     ],
-    body: (solarList as meSolarDataType[]).length
-      ? (solarList as meSolarDataType[]).map((element, index) => [
+
+    body: (panelList as mePanelDataType[]).length
+      ? (panelList as mePanelDataType[]).map((element, index) => [
           index + 1,
           <Group gap="xs" key={`action-${element.id}`}>
             {generalForm?.status == "Default" &&
               authUserId == generalForm?.user_id && (
                 <div className="flex gap-2 flex-nowrap">
                   <Link
-                    to={`/solar_edit/${element.id}`}
+                    to={`/panel_edit/${element.id}`}
                     state={{ generalForm }}
                     className="contents"
                   >
@@ -130,54 +130,35 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
               )}
           </Group>,
           <div className="whitespace-nowrap">
-            {dateFormat(element.solar_date)}
+            {dateFormat(element.panel_date)}
           </div>,
-          <div className=" whitespace-nowrap">{element.solar_time_ampm}</div>,
+          <div className=" whitespace-nowrap">{element.panel_time}</div>,
           numberFormat(element.l1_level),
           numberFormat(element.l2_level),
           numberFormat(element.l3_level),
           <div className="flex items-end justify-center w-full whitespace-nowrap">
+            {numberFormat(element.breaker_temperature)}
+          </div>,
+          <div className="flex items-end justify-center w-full whitespace-nowrap">
+            {numberFormat(element.total_load_kw_use)}
+          </div>,
+          <div className="flex items-end justify-center w-full whitespace-nowrap">
             {numberFormat(element.voltagel_l_level)}
           </div>,
           <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {numberFormat(element.total_solar_output_Kw)}
+            {element.panel_cleaning_maintenance}
           </div>,
           <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {numberFormat(element.avg_battery_percentage)}
+            {element.breaker_maintenance}
           </div>,
           <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {numberFormat(element.grid_kw_use)}
-          </div>,
-          // numberFormat(element.total_kw_level),
-
-          // <div className="bg-red-600 whitespace-nowrap flex">
-          <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {numberFormat(element.total_load_kw_use)}
-            {/* </div> */}
-          </div>,
-          // numberFormat(element.total_kw_level),
-
-          // <div className="bg-red-600 whitespace-nowrap flex">
-          <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {numberFormat(element.solar_unit)}
-            {/* </div> */}
+            {element.lighting_maintenance}
           </div>,
 
           <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {element.check_inverter}
-          </div>,
-          <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {element.check_battery}
-          </div>,
-          <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {element.check_panel_temperature}
+            {element.led_light_box_power}
           </div>,
 
-          <div className="whitespace-nowrap">
-            {element.panel_cleaning_date
-              ? dateFormat(element.panel_cleaning_date)
-              : "- "}
-          </div>,
           <div
             className={`
   ${
@@ -200,7 +181,7 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  setActiveSolarId(element?.id);
+                  setActivePanelId(element?.id);
                   openFileModal();
                 }}
                 className="hover:text-blue-900 transition"
@@ -215,9 +196,9 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
       : [],
   };
   const filteredFiles = (files as FileItem[])?.filter(
-    (file) => file.solar_id === activeSolarId,
+    (file) => file.panel_id === activePanelId,
   );
-  console.log("solarList>>", solarList);
+  console.log("panelList>>", panelList);
   return (
     <div className="relative mt-6 overflow-x-auto">
       <Table
@@ -231,7 +212,7 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
         opened={fileOpened}
         onClose={() => {
           closeFileModal();
-          setActiveSolarId(null);
+          setActivePanelId(null);
         }}
         title="Attached Files"
         size="lg"
@@ -275,4 +256,4 @@ const SolarTableDetail: React.FC<TableDetailProps> = ({
   );
 };
 
-export default SolarTableDetail;
+export default PanelTableDetail;

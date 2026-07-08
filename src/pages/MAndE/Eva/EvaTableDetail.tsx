@@ -83,13 +83,13 @@ const EvaTableDetail: React.FC<TableDetailProps> = ({
         ),
       "Date",
       "Time",
-      <div className="whitespace-nowrap">Evaporator Size</div>,
       <div className="whitespace-nowrap">Pump 1 Water Pressure</div>,
       <div className="whitespace-nowrap">Pump 2 Water Pressure</div>,
-      <div className="whitespace-nowrap">Pump Air Check</div>,
-      <div className="whitespace-nowrap">Pipe Leak Check</div>,
+      <div className="whitespace-nowrap">Air Tank Check</div>,
+      <div className="whitespace-nowrap">Pipe Check</div>,
       <div className="whitespace-nowrap">Water Level Check</div>,
-      <div className="whitespace-nowrap">Filter Wet Check</div>,
+      <div className="whitespace-nowrap">Filter Check</div>,
+      
 
       "Remark",
       "Image",
@@ -127,9 +127,6 @@ const EvaTableDetail: React.FC<TableDetailProps> = ({
             {dateFormat(element.eva_date)}
           </div>,
           <div className=" whitespace-nowrap">{element.eva_time_ampm}</div>,
-          <div className="flex items-end justify-center w-full whitespace-nowrap">
-            {element.eva_size}
-          </div>,
 
           <div className="flex items-end justify-center w-full whitespace-nowrap">
             {element.pump1_water_pressure}

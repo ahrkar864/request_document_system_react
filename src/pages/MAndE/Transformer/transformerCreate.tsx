@@ -297,12 +297,23 @@ const TransformerCreate: React.FC = () => {
 
       formElement.reset();
       navigate(-1);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Something went wrong while saving data",
-      });
+    } catch (error: any) {
+      console.log("Full error:", error);
+
+      if (!error?.response) {
+        Swal.fire({
+          icon: "error",
+          title: "Network Error",
+          text: "Internet လိုင်းကိုတစ်ချက်လောက်ပြန်စစ်ပေးပါ။",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text:
+            "Something went wrong while saving data",
+        });
+      }
     } finally {
       setLoading(false);
     }

@@ -31,7 +31,7 @@ export default function () {
         { label: "Accident Case - မတော်တဆဖြစ်ရပ်များ စစ်ဆေးခြင်း", value: 3 },
         { label: "HR Case - HR နှင်ပတ်သတ်သောဖြစ်ရပ်များ စစ်ဆေးခြင်း", value: 4 },
         { label: "Stolen Case - ခိုးယူမူ နှင့်သက်ဆိုင်သော ဖြစ်ရပ်များ စစ်ဆေးခြင်း", value: 5 },
-        { label: "Other - အခြားအကြောင်းအရာများ စစ်ဆေးခြင်း", value: 5 },
+        { label: "Other - အခြားအကြောင်းအရာများ စစ်ဆေးခြင်း", value: 6 },
     ];
 
     const recordTypes = [

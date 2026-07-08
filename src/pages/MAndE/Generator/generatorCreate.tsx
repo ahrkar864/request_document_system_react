@@ -280,14 +280,24 @@ const GeneratorCreate: React.FC = () => {
       });
 
       formElement.reset(); // optional
-      // navigate(`/generator/${formId}`);
       navigate(-1);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Something went wrong while saving data",
-      });
+    } catch (error: any) {
+      console.log("Full error:", error);
+
+      if (!error?.response) {
+        Swal.fire({
+          icon: "error",
+          title: "Network Error",
+          text: "Internet လိုင်းကိုတစ်ချက်လောက်ပြန်စစ်ပေးပါ။",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text:
+            "Something went wrong while saving data",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -1064,7 +1074,9 @@ const GeneratorCreate: React.FC = () => {
                     className="flex flex-col gap-2 w-full"
                   >
                     <div className="flex items-center gap-2">
-                      <label>{index === 0 ? "Upload(Max uploads file 4)" : undefined}</label>
+                      <label>
+                        {index === 0 ? "Upload(Max uploads file 4)" : undefined}
+                      </label>
                       <span>
                         <FaStar className="text-red-400" />
                       </span>

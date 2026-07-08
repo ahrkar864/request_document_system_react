@@ -299,7 +299,8 @@ export default function CctvDetails() {
             case 3: return 'Accident Case - မတော်တဆဖြစ်ရပ်များ စစ်ဆေးခြင်း';
             case 4: return 'HR Case - HR နှင်ပတ်သတ်သောဖြစ်ရပ်များ စစ်ဆေးခြင်း';
             case 5: return 'Stolen Case - ခိုးယူမူ နှင့်သက်ဆိုင်သော ဖြစ်ရပ်များ စစ်ဆေးခြင်း';
-            default: return 'Other - အခြားအကြောင်းအရာများ စစ်ဆေးခြင်း';
+            case 6: return 'Other - အခြားအကြောင်းအရာများ စစ်ဆေးခြင်း';
+            default: return '—';
         }
     }
 

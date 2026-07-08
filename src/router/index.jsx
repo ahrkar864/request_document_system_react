@@ -47,6 +47,10 @@ import EvaIndex from "../pages/MAndE/Eva/EvaIndex.js";
 import EvaCreate from "../pages/MAndE/Eva/EvaCreate.js";
 import EvaDetail from "../pages/MAndE/Eva/EvaDetail.js";
 import EvaEdit from "../pages/MAndE/Eva/EvaEdit.js";
+import PanelIndex from "../pages/MAndE/Panel/panelIndex.js";
+import PanelCreate from "../pages/MAndE/Panel/panelCreate.js";
+import PanelDetail from "../pages/MAndE/Panel/panelDetail.js";
+import PanelEdit from "../pages/MAndE/Panel/panelEdit.js";
 const LoginRoute = () => {
   const token = localStorage.getItem("token");
   return token ? <Navigate to="/dashboard" /> : <Login />;
@@ -223,6 +227,23 @@ const router = createBrowserRouter([
       {
         path: "evaporator_edit/:id",
         element: <EvaEdit />,
+      },
+
+      {
+        path: "panel/:id",
+        element: <PanelIndex />,
+      },
+      {
+        path: "panel_create",
+        element: <PanelCreate />,
+      },
+      {
+        path: "me_panel_detail/:id",
+        element: <PanelDetail />,
+      },
+      {
+        path: "panel_edit/:id",
+        element: <PanelEdit />,
       },
       {
         path: "price_changes",

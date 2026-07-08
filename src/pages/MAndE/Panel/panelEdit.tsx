@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
   type FileItem,
-  type meSolarDataType,
+  type mePanelDataType,
 } from "../../../utils/meDataUtil/metype";
 import Swal from "sweetalert2";
 import FullPageLoader from "../../../components/FullPageLoader";
@@ -11,15 +11,14 @@ import { Button, Menu, Text } from "@mantine/core";
 import { FaStar } from "react-icons/fa";
 import cctvPhoto from "../../../assets/images/ban1.png";
 import NavPath from "../../../components/NavPath";
-import { fetchData } from "../../../api/FetchApi";
 import { IconFile, IconFileText, IconX } from "@tabler/icons-react";
 import {
-  getUpdateSolarData,
-  solarEditData,
-  solarFileDelete,
-} from "../../../api/ME/solar";
+  updatePanelData,
+  editPanelData,
+  panelFileDelete,
+} from "../../../api/ME/panel/panel";
 
-const SolarEdit: React.FC = () => {
+const PanelEdit: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
   const generalForm = location.state?.generalForm;
@@ -28,22 +27,19 @@ const SolarEdit: React.FC = () => {
   ]);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [form, setForm] = useState<meSolarDataType>({
-    solar_date: "",
-    solar_time: "",
+  const [form, setForm] = useState<mePanelDataType>({
+    panel_date: "",
+    panel_time: "",
     l1_level: 0,
     l2_level: 0,
     l3_level: 0,
-    voltagel_l_level: 0,
-    grid_kw_use: 0,
+    breaker_temperature: 0,
     total_load_kw_use: 0,
-    total_solar_output_Kw: 0,
-    avg_battery_percentage: 0,
-    solar_unit: 0,
-    check_inverter: "",
-    check_battery: "",
-    check_panel_temperature: "",
-    panel_cleaning_date: "",
+    voltagel_l_level: 0,
+    panel_cleaning_maintenance: "",
+    breaker_maintenance: "",
+    lighting_maintenance: "",
+    led_light_box_power: "",
     remark: "",
   });
   const [remark, setRemark] = useState<string>("");
@@ -56,13 +52,13 @@ const SolarEdit: React.FC = () => {
       if (!token) return;
       setLoading(true);
       try {
-        const res = await solarEditData(token, id);
+        const res = await editPanelData(token, id);
         console.log("ExistingFiles>>", res);
         const data = res?.editData;
         setForm({
           ...data,
-          solar_time: data?.solar_time ? data.solar_time.slice(0, 5) : "",
-          solar_use: data?.solar_use ?? "use",
+          panel_time: data?.panel_time ? data.panel_time.slice(0, 5) : "",
+          panel_use: data?.panel_use ?? "use",
         });
         setRemark(data.remark || "");
         setExistingFiles(res?.files || []);
@@ -178,7 +174,7 @@ const SolarEdit: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      await solarFileDelete(token, fileId);
+      await panelFileDelete(token, fileId);
       setExistingFiles((prev) => prev.filter((f) => f.id !== fileId));
       Swal.fire({
         icon: "success",
@@ -195,20 +191,18 @@ const SolarEdit: React.FC = () => {
     }
   };
   const validators = {
-    solar_date: "Date is required",
-    solar_time: "Time is required",
+    panel_date: "Date is required",
+    panel_time: "Time is required",
     l1_level: "L1 is required",
     l2_level: "L2 is required",
     l3_level: "L3 is required",
-    voltagel_l_level: "Voltage l-L is required",
-    grid_kw_use: "Grid Kw Use is required",
+    breaker_temperature: "Breaker Temperature is required",
     total_load_kw_use: "Total Load Kw Use is required",
-    total_solar_output_Kw: "Output Kw is required",
-    avg_battery_percentage: "Average Battery Percentage is required",
-    solar_unit: "Solar Unit is required",
-    check_inverter: "Inverter checking is required",
-    check_battery: "Battery checking is required",
-    check_panel_temperature: "Panel Temperature is required",
+    voltagel_l_level: "Voltage l-L is required",
+    panel_cleaning_maintenance: "Panel Cleaning Maintenance is required",
+    breaker_maintenance: "Breaker Maintenance is required",
+    lighting_maintenance: "Lighting Power Source Maintenance is required",
+    led_light_box_power: "LED Light Box Power is required",
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -219,34 +213,28 @@ const SolarEdit: React.FC = () => {
     const l1 = Number(formData.get("l1_level") || 0);
     const l2 = Number(formData.get("l2_level") || 0);
     const l3 = Number(formData.get("l3_level") || 0);
-    const outputKw = Number(formData.get("total_solar_output_Kw") || 0);
-    const avgBatteryPercentage = Number(
-      formData.get("avg_battery_percentage") || 0,
-    );
-    const solarUnit = Number(formData.get("solar_unit") || 0);
-    const gridKwUse = Number(formData.get("grid_kw_use") || 0);
+    const breakerTemperature = Number(formData.get("breaker_temperature") || 0);
     const totalLoadKwUse = Number(formData.get("total_load_kw_use") || 0);
-    if (form.solar_use === "use") {
+    const voltagelLLevel = Number(formData.get("voltagel_l_level") || 0);
+
+    if (form.panel_use === "use") {
       if (l1 === 0) missingFields.push("L1 must be greater than 0");
       if (l2 === 0) missingFields.push("L2 must be greater than 0");
       if (l3 === 0) missingFields.push("L3 must be greater than 0");
-      if (outputKw === 0)
-        missingFields.push("Output Kw must be greater than 0");
 
-      if (avgBatteryPercentage === 0)
-        missingFields.push("Average Battery Percentage must be greater than 0");
+      if (breakerTemperature === 0)
+        missingFields.push("Breaker Temperature must be greater than 0");
 
-      if (solarUnit === 0)
-        missingFields.push("Solar Unit must be greater than 0");
-      if (gridKwUse === 0)
-        missingFields.push("grid kw use must be greater than 0");
       if (totalLoadKwUse === 0)
         missingFields.push("total load kw use must be greater than 0");
-    }
-    const solarDate = form.solar_date;
 
-    if (solarDate) {
-      const selectedDate = new Date(solarDate.toString());
+      if (voltagelLLevel === 0)
+        missingFields.push("Voltage l-L must be greater than 0");
+    }
+    const panelDate = form.panelDate;
+
+    if (panelDate) {
+      const selectedDate = new Date(panelDate.toString());
       const today = new Date();
       // today.setHours(0, 0, 0, 0);
 
@@ -256,7 +244,7 @@ const SolarEdit: React.FC = () => {
     }
     Object.entries(validators).forEach(([key, message]) => {
       if (
-        form.solar_use === "no_use" &&
+        form.panel_use === "no_use" &&
         ["l1_level", "l2_level", "l3_level"].includes(key)
       ) {
         return;
@@ -290,12 +278,13 @@ const SolarEdit: React.FC = () => {
     });
     setLoading(true);
     try {
+      console.log("FormData entries>>", Array.from(formData.entries()));
       const token = localStorage.getItem("token");
-      await getUpdateSolarData(token, formData, id);
+      await updatePanelData(token, formData, id);
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Solar data stored successfully",
+        text: "Panel data updated successfully",
       });
       formElement.reset(); // optional
       navigate(-1);
@@ -323,7 +312,6 @@ const SolarEdit: React.FC = () => {
   const isAtLimit = remark.length === 225;
   const handleRemarkChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    // setRemark(e.target.value);
     if (e.target.value.length <= 225) {
       setRemark(value);
       setForm((prev: any) => ({ ...prev, remark: value }));
@@ -342,34 +330,34 @@ const SolarEdit: React.FC = () => {
         segments={[
           { path: "/dashboard", label: "Home" },
           {
-            path: `/me_solar_detail/${generalForm?.id}`,
-            label: "Solar Detail",
+            path: `/me_panel_detail/${generalForm?.id}`,
+            label: "Panel Detail",
           },
         ]}
       />
-      <div className="flex items-center gap-6 p-4 rounded-xl">
+      {/* <div className="flex items-center gap-6 p-4 rounded-xl">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"
-            name="solar_use"
+            name="panel_use"
             value="use"
-            checked={form.solar_use === "use"}
+            checked={form.panel_use === "use"}
             onChange={handleChange}
           />
-          Solar Run
+          Panel Run
         </label>
 
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="radio"
-            name="solar_use"
+            name="panel_use"
             value="no_use"
-            checked={form.solar_use === "no_use"}
+            checked={form.panel_use === "no_use"}
             onChange={handleChange}
           />
-          Solar Not Run
+          Panel Not Run
         </label>
-      </div>
+      </div> */}
       <form
         onSubmit={handleSubmit}
         className=" 
@@ -400,8 +388,8 @@ const SolarEdit: React.FC = () => {
               </div>
               <input
                 required
-                name="solar_date"
-                value={form.solar_date}
+                name="panel_date"
+                value={form.panel_date}
                 type="date"
                 onChange={handleChange}
                 max={new Date().toISOString().split("T")[0]}
@@ -422,8 +410,8 @@ const SolarEdit: React.FC = () => {
               />
               <input
                 type="hidden"
-                name="solar_use"
-                value={form.solar_use == "use" ? "use" : "no_use"}
+                name="panel_use"
+                value={form.panel_use == "use" ? "use" : "no_use"}
               />
             </div>
 
@@ -437,9 +425,9 @@ const SolarEdit: React.FC = () => {
               <input
                 type="time"
                 required
-                name="solar_time"
+                name="panel_time"
                 onChange={handleChange}
-                value={form.solar_time}
+                value={form.panel_time}
                 className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
                 style={{ borderColor: "rgb(29, 137, 225)" }}
               />
@@ -459,9 +447,9 @@ const SolarEdit: React.FC = () => {
                 name="l1_level"
                 min="0"
                 max="999999"
-                value={form.solar_use === "no_use" ? 0 : form.l1_level}
-                disabled={form.solar_use === "no_use"}
-                required={form.solar_use == "use"}
+                value={form.panel_use === "no_use" ? 0 : form.l1_level}
+                disabled={form.panel_use === "no_use"}
+                required={form.panel_use == "use"}
                 onChange={handleLLevelChange}
                 onKeyDown={(e) => {
                   if (e.key === "-" || e.key === "e") {
@@ -477,7 +465,7 @@ const SolarEdit: React.FC = () => {
                 className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
                 style={{
                   borderColor:
-                    form.solar_use === "use"
+                    form.panel_use === "use"
                       ? "rgb(29, 137, 225)"
                       : "rgb(207, 209, 197)",
                 }}
@@ -495,9 +483,9 @@ const SolarEdit: React.FC = () => {
                 name="l2_level"
                 min="0"
                 max="999999"
-                value={form.solar_use === "no_use" ? 0 : form.l2_level}
-                disabled={form.solar_use === "no_use"}
-                required={form.solar_use == "use"}
+                value={form.panel_use === "no_use" ? 0 : form.l2_level}
+                disabled={form.panel_use === "no_use"}
+                required={form.panel_use == "use"}
                 onChange={handleLLevelChange}
                 onInput={(e: any) => {
                   if (e.target.value.length > 6) {
@@ -513,7 +501,7 @@ const SolarEdit: React.FC = () => {
                 className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
                 style={{
                   borderColor:
-                    form.solar_use === "use"
+                    form.panel_use === "use"
                       ? "rgb(29, 137, 225)"
                       : "rgb(207, 209, 197)",
                 }}
@@ -523,7 +511,7 @@ const SolarEdit: React.FC = () => {
 
           <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-8 md:gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
-              <div className="">
+              <div className="l3-level">
                 <div className="flex items-center gap-2">
                   <label htmlFor="">L3</label>
                   <span>
@@ -540,9 +528,9 @@ const SolarEdit: React.FC = () => {
                       e.target.value = e.target.value.slice(0, 6);
                     }
                   }}
-                  value={form.solar_use === "no_use" ? 0 : form.l3_level}
-                  disabled={form.solar_use === "no_use"}
-                  required={form.solar_use == "use"}
+                  value={form.panel_use === "no_use" ? 0 : form.l3_level}
+                  disabled={form.panel_use === "no_use"}
+                  required={form.panel_use == "use"}
                   onChange={handleLLevelChange}
                   onKeyDown={(e) => {
                     if (e.key === "-" || e.key === "e") {
@@ -553,13 +541,90 @@ const SolarEdit: React.FC = () => {
                   className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
                   style={{
                     borderColor:
-                      form.solar_use === "use"
+                      form.panel_use === "use"
                         ? "rgb(29, 137, 225)"
                         : "rgb(207, 209, 197)",
                   }}
                 />
               </div>
-              <div className="">
+
+              <div className="breaker-temperature">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="">Breaker Temperature</label>
+                  <span>
+                    <FaStar className="text-red-400" />
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  name="breaker_temperature"
+                  value={form?.breaker_temperature}
+                  required
+                  min="0"
+                  max="999999"
+                  inputMode="decimal"
+                  onChange={(e: any) => {
+                    let value = e.target.value;
+                    value = value.replace(/[^0-9.]/g, "");
+
+                    const parts = value.split(".");
+                    if (parts.length > 2) return;
+                    if (parts[0].length > 6) {
+                      parts[0] = parts[0].slice(0, 6);
+                    }
+                    if (parts[1]) {
+                      parts[1] = parts[1].slice(0, 2);
+                    }
+
+                    setForm((prev: any) => ({
+                      ...prev,
+                      breaker_temperature: parts.join("."),
+                    }));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "-" || e.key === "e") {
+                      e.preventDefault();
+                    }
+                  }}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
+                  style={{ borderColor: "rgb(29, 137, 225)" }}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
+              <div className="total-load-kw-use">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="">Total Load Kw Use</label>
+                  <span>
+                    <FaStar className="text-red-400" />
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  name="total_load_kw_use"
+                  value={form.total_load_kw_use}
+                  onChange={handleChange}
+                  placeholder="Enter total load Kw use for 1 day "
+                  min="0"
+                  max="9999999"
+                  onInput={(e: any) => {
+                    if (e.target.value.length > 6) {
+                      e.target.value = e.target.value.slice(0, 6);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "-" || e.key === "e") {
+                      e.preventDefault();
+                    }
+                  }}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
+                  style={{ borderColor: "rgb(29, 137, 225)" }}
+                />
+              </div>
+
+              <div className="voltage-l-l-level">
                 <div className="flex items-center gap-2">
                   <label htmlFor="">VoltageL-L</label>
                   <span>
@@ -603,314 +668,97 @@ const SolarEdit: React.FC = () => {
                 />
               </div>
             </div>
+          </div>
+          <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-8 md:gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
-              <div className="">
+              <div className="panel-cleaning-maintenance">
                 <div className="flex items-center gap-2">
-                  <label htmlFor="">Grid Kw Use</label>
+                  <label htmlFor="">Panel Cleaning Maintenance</label>
                   <span>
                     <FaStar className="text-red-400" />
                   </span>
                 </div>
-                <input
-                  type="number"
-                  name="grid_kw_use"
-                  value={form.grid_kw_use}
-                  placeholder="Enter Grid Kw use for one day."
-                  onChange={handleLLevelChange}
-                  min="0"
-                  max="9999999"
-                  onInput={(e: any) => {
-                    if (e.target.value.length > 6) {
-                      e.target.value = e.target.value.slice(0, 6);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "-" || e.key === "e") {
-                      e.preventDefault();
-                    }
-                  }}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
+                <select
+                  name="panel_cleaning_maintenance"
+                  value={form?.panel_cleaning_maintenance}
+                  onChange={(e: any) => handleChange(e)}
+                  id=""
+                  className="border py-2 px-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
                   style={{ borderColor: "rgb(29, 137, 225)" }}
-                />
+                >
+                  <option value="">Choose Option</option>
+                  <option value="Checked">Check</option>
+                  <option value="Not Check">Not Check</option>
+                </select>
               </div>
 
-              <div className="">
+              <div className="breaker-maintenance">
                 <div className="flex items-center gap-2">
-                  <label htmlFor="">Total Load Kw Use</label>
+                  <label htmlFor="">Breaker Maintenance</label>
                   <span>
                     <FaStar className="text-red-400" />
                   </span>
                 </div>
-                <input
-                  type="number"
-                  name="total_load_kw_use"
-                  value={form.total_load_kw_use}
-                  onChange={handleChange}
-                  placeholder="Enter total load Kw use for 1 day "
-                  min="0"
-                  max="9999999"
-                  onInput={(e: any) => {
-                    if (e.target.value.length > 6) {
-                      e.target.value = e.target.value.slice(0, 6);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "-" || e.key === "e") {
-                      e.preventDefault();
-                    }
-                  }}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
+                <select
+                  name="breaker_maintenance"
+                  value={form?.breaker_maintenance}
+                  onChange={(e: any) => handleChange(e)}
+                  id=""
+                  className="border py-2 px-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
                   style={{ borderColor: "rgb(29, 137, 225)" }}
-                />
+                >
+                  <option value="">Choose Option</option>
+                  <option value="Checked">Check</option>
+                  <option value="Not Check">Not Check</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
+              <div className="lighting-power-source-maintenance">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="">Lighting & Power Source Maintenance</label>
+                  <span>
+                    <FaStar className="text-red-400" />
+                  </span>
+                </div>
+                <select
+                  name="lighting_maintenance"
+                  value={form?.lighting_maintenance}
+                  onChange={(e: any) => handleChange(e)}
+                  id=""
+                  className="border py-2 px-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
+                  style={{ borderColor: "rgb(29, 137, 225)" }}
+                >
+                  <option value="">Choose Option</option>
+                  <option value="Checked">Check</option>
+                  <option value="Not Check">Not Check</option>
+                </select>
+              </div>
+              <div className="led-light-box-power">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="">LED Light Box Power</label>
+                  <span>
+                    <FaStar className="text-red-400" />
+                  </span>
+                </div>
+                <select
+                  name="led_light_box_power"
+                  value={form?.led_light_box_power}
+                  onChange={(e: any) => handleChange(e)}
+                  id=""
+                  className="border py-2 px-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
+                  style={{ borderColor: "rgb(29, 137, 225)" }}
+                >
+                  <option value="">Choose Option</option>
+                  <option value="Checked">Check</option>
+                  <option value="Not Check">Not Check</option>
+                </select>
               </div>
             </div>
           </div>
-          <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-8 md:gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
-              <div className="">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="">Total Solar Output Kw</label>
-                  <span>
-                    <FaStar className="text-red-400" />
-                  </span>
-                </div>
-                <input
-                  type="number"
-                  name="total_solar_output_Kw"
-                  value={form.total_solar_output_Kw}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  max="9999999"
-                  onInput={(e: any) => {
-                    if (e.target.value.length > 6) {
-                      e.target.value = e.target.value.slice(0, 6);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "-" || e.key === "e") {
-                      e.preventDefault();
-                    }
-                  }}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
-                  style={{ borderColor: "rgb(29, 137, 225)" }}
-                />
-              </div>
-
-              <div className="">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="">Average Battery (%)</label>
-                  <span>
-                    <FaStar className="text-red-400" />
-                  </span>
-                </div>
-                <input
-                  type="number"
-                  name="avg_battery_percentage"
-                  value={form.avg_battery_percentage}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  max="9999999"
-                  onInput={(e: any) => {
-                    const value = parseInt(e.target.value, 10);
-                    if (e.target.value.length > 3) {
-                      e.target.value = e.target.value.slice(0, 3);
-                    }
-                    if (value > 100) {
-                      e.target.value = "100";
-                    }
-                    if (value < 1) {
-                      e.target.value = "1";
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "-" || e.key === "e") {
-                      e.preventDefault();
-                    }
-                  }}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
-                  style={{ borderColor: "rgb(29, 137, 225)" }}
-                />
-              </div>
-
-              <div className="">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="">Unit Day</label>
-                  <span>
-                    <FaStar className="text-red-400" />
-                  </span>
-                </div>
-                <input
-                  type="number"
-                  name="solar_unit"
-                  value={form.solar_unit}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  max="9999999"
-                  onInput={(e: any) => {
-                    if (e.target.value.length > 6) {
-                      e.target.value = e.target.value.slice(0, 6);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "-" || e.key === "e") {
-                      e.preventDefault();
-                    }
-                  }}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
-                  style={{ borderColor: "rgb(29, 137, 225)" }}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
-              <div className="">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="">Inverter Check</label>
-                  <span>
-                    <FaStar className="text-red-400" />
-                  </span>
-                </div>
-                <select
-                  name="check_inverter"
-                  value={form?.check_inverter}
-                  onChange={(e: any) => handleChange(e)}
-                  id=""
-                  className="border py-2 px-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
-                  style={{ borderColor: "rgb(29, 137, 225)" }}
-                >
-                  <option value="">Choose Option</option>
-                  <option value="Checked">Check</option>
-                  <option value="Not Check">Not Check</option>
-                </select>
-              </div>
-              <div className="">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="">Battery Check</label>
-                  <span>
-                    <FaStar className="text-red-400" />
-                  </span>
-                </div>
-                <select
-                  name="check_battery"
-                  value={form?.check_battery}
-                  onChange={(e: any) => handleChange(e)}
-                  id=""
-                  className="border py-2 px-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
-                  style={{ borderColor: "rgb(29, 137, 225)" }}
-                >
-                  <option value="">Choose Option</option>
-                  <option value="Checked">Check</option>
-                  <option value="Not Check">Not Check</option>
-                </select>
-              </div>
-
-              <div className="">
-                <div className="flex items-center gap-2">
-                  <label htmlFor=""> SDP Panel temp Check </label>
-                  <span>
-                    <FaStar className="text-red-400" />
-                  </span>
-                </div>
-                <select
-                  name="check_panel_temperature"
-                  value={form?.check_panel_temperature}
-                  onChange={(e: any) => handleChange(e)}
-                  id=""
-                  className="border py-2 px-2 w-full rounded-md focus:outline-2 focus:outline-blue-400"
-                  style={{ borderColor: "rgb(29, 137, 225)" }}
-                >
-                  <option value="">Choose Option</option>
-                  <option value="Checked">Check</option>
-                  <option value="Not Check">Not Check</option>
-                </select>
-              </div>
-            </div>
-
-            {/* <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <label>Inverter Checking</label>
-                              <span>
-                                <FaStar className="text-red-400" />
-                              </span>
-                            </div>
-          
-                            <label className="flex items-center gap-2 mt-2">
-                              <input
-                                type="checkbox"
-                                name="check_inverter"
-                                value="Checked"
-                                className="w-4 h-4"
-                              />
-                              <span>Checked</span>
-                            </label>
-                          </div>
-          
-                          
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <label>Battery Checking</label>
-                              <span>
-                                <FaStar className="text-red-400" />
-                              </span>
-                            </div>
-          
-                            <label className="flex items-center gap-2 mt-2">
-                              <input
-                                type="checkbox"
-                                name="check_battery"
-                                value="Checked"
-                                className="w-4 h-4"
-                              />
-                              <span>Checked</span>
-                            </label>
-                          </div>
-          
-                       
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <label>Panel Temperature Checking</label>
-                              <span>
-                                <FaStar className="text-red-400" />
-                              </span>
-                            </div>
-          
-                            <label className="flex items-center gap-2 mt-2">
-                              <input
-                                type="checkbox"
-                                name="check_panel_temperature"
-                                value="Checked"
-                                className="w-4 h-4"
-                              />
-                              <span>Checked</span>
-                            </label>
-                          </div>
-                        </div> */}
-          </div>
 
           <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-8 md:gap-6">
-            <div className="">
-              <div className="">
-                <label htmlFor=""> Panel Cleaning Date</label>
-                <input
-                  type="date"
-                  name="panel_cleaning_date"
-                  value={form.panel_cleaning_date}
-                  onChange={handleChange}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  className="border focus:outline-blue  p-2 w-full rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-blue-400"
-                  style={{ borderColor: "rgb(29, 137, 225)" }}
-                />
-              </div>
-            </div>
             <div className="">
               <div className="flex items-center gap-2">
                 <label htmlFor=""> Remark</label>
@@ -1153,4 +1001,4 @@ const SolarEdit: React.FC = () => {
   );
 };
 
-export default SolarEdit;
+export default PanelEdit;
