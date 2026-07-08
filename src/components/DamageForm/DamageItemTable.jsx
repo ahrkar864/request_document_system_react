@@ -717,6 +717,47 @@ export default function DamageItemTable({
 
   const showReviewQtyColumns = mode !== 'add';
 
+  const canDeleteSelectedItems = useMemo(() => {
+    if (selectedIds.length === 0) return false;
+
+    if (mode === 'add') {
+      return !isCompleted;
+    }
+
+    const statusAllowsDelete =
+      (status === 'Ongoing' || status?.toLowerCase() === 'ongoing') ||
+      (status === 'Checked' && isApproverRole) ||
+      (isAccount && (
+        status === 'BM Approved' ||
+        status === 'BMApproved' ||
+        status === 'OP Approved' ||
+        status === 'OPApproved'
+      ));
+
+    if (!statusAllowsDelete) return false;
+    if (status === 'Completed' || status === 'Issued' || status === 'SupervisorIssued') return false;
+
+    const stageAllowsDelete =
+      (status !== 'Ac_Acknowledged' && status !== 'Acknowledged') || isAccount;
+
+    return (
+      stageAllowsDelete &&
+      !isUserRole &&
+      !isSupervisorUser &&
+      !(isCheckerRole && ((status || '').toString().toLowerCase() === 'checked'))
+    );
+  }, [
+    mode,
+    status,
+    isCompleted,
+    selectedIds.length,
+    isApproverRole,
+    isAccount,
+    isUserRole,
+    isSupervisorUser,
+    isCheckerRole,
+  ]);
+
   const getAccountCodeLabel = useCallback((code) => {
     if (code === undefined || code === null || code === '') {
       return '-';
@@ -980,11 +1021,11 @@ export default function DamageItemTable({
 
   // Memoize the callback to prevent unnecessary re-renders
   const handleItemsChange = useCallback((itemsToUpdate) => {
-    if (!itemsToUpdate || !itemsToUpdate.length) return;
-    
+    if (!Array.isArray(itemsToUpdate)) return;
+
     // Clean up items before sending to parent
     const cleanedItems = itemsToUpdate.map(({ originalItem, ...rest }) => rest);
-    
+
     onItemsChange(cleanedItems);
   }, [onItemsChange]);
   
@@ -1816,7 +1857,13 @@ const normalizeImageEntries = (list) => {
   };
 
   const handleMultipleDelete = () => {
-    setItems(items.filter((item) => !selectedIds.includes(item.id)));
+    const idsToDelete = new Set(selectedIds.map((id) => String(id)));
+    setItems((prev) =>
+      prev.filter((item) => {
+        const itemId = String(item.id ?? item.specific_form_id ?? '');
+        return !idsToDelete.has(itemId);
+      })
+    );
     setSelectedIds([]);
     setShowConfirm(false);
   };
@@ -2267,41 +2314,8 @@ const normalizeImageEntries = (list) => {
 
          <div className="flex gap-2 flex-wrap items-center order-1 sm:order-2">
 
-          {/* Delete button - Show for Ongoing or Checked (approver only) status.
-              Also allow Branch Account users to delete when the form is BM Approved or OP Approved. */}
-          {(
-            // Allow delete when:
-            // - Ongoing, or
-            // - Checked by an approver, or
-            // - Branch Account viewing BM Approved / OP Approved forms
-            (
-              (status === 'Ongoing' || status?.toLowerCase() === 'ongoing') ||
-              (status === 'Checked' && isApproverRole) ||
-              (isAccount && (
-                status === 'BM Approved' ||
-                status === 'BMApproved' ||
-                status === 'OP Approved' ||
-                status === 'OPApproved'
-              ))
-            ) &&
-            status !== 'Completed' &&
-            status !== 'Issued' &&
-            status !== 'SupervisorIssued' &&
-            mode !== 'add' &&
-            (
-              // Default: hide delete for Ac_Acknowledged/Acknowledged stages for non-account users
-              (
-                status !== 'Ac_Acknowledged' &&
-                status !== 'Acknowledged'
-              ) ||
-              // Branch Account already allowed for BM/OP above
-              isAccount
-            ) &&
-            !isUserRole &&
-            !isSupervisorUser &&
-            !(isCheckerRole && ((status || '').toString().toLowerCase() === 'checked')) &&
-            selectedIds.length > 0
-          ) && (
+          {/* Delete button - add mode: remove items before submit; edit mode: status/role rules */}
+          {canDeleteSelectedItems && (
             <button
               onClick={confirmMultipleDelete}
               className="flex items-center gap-1 px-2 py-[1px] text-[0.65rem] sm:text-[0.75rem] bg-red-600 text-white rounded hover:bg-red-700 transition"
@@ -3797,22 +3811,8 @@ const normalizeImageEntries = (list) => {
           <p className="text-center text-gray-400 text-sm py-6">{t('table.noItemsAdded', { defaultValue: 'No items added yet.' })}</p>
         )}
 
-             {/* Delete button - Same logic as Add button: Show for Ongoing or Checked (approver only) status, hide for Account and regular users */}
-             {((status === 'Ongoing' || status?.toLowerCase() === 'ongoing') || 
-            (status === 'Checked' && isApproverRole)) && 
-           status !== 'Completed' && 
-           status !== 'Issued' && 
-           status !== 'SupervisorIssued' &&
-           mode !== 'add' && 
-           status !== 'BM Approved' && 
-           status !== 'BMApproved' &&
-           status !== 'Ac_Acknowledged' && 
-           status !== 'Acknowledged' &&
-           !isAccount && 
-           !isUserRole && 
-           !isSupervisorUser && 
-           !(isCheckerRole && ((status || '').toString().toLowerCase() === 'checked')) &&
-           selectedIds.length > 0 && (
+             {/* Delete button - mobile sticky; same visibility as desktop toolbar */}
+             {canDeleteSelectedItems && (
           <div className="sticky bottom-2 left-0 w-full flex justify-center mt-3">
             <button
               onClick={confirmMultipleDelete}
