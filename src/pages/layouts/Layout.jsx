@@ -4,19 +4,6 @@ import Sidebar from "../../components/Siderbar";
 import Navbar from "../../components/Navbar";
 import PushNotificationManager from "../../components/common/PushNotificationManager";
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("/sw.js").then(
-      function (registration) {
-        console.log("ServiceWorker registration successful");
-      },
-      function (err) {
-        // console.log('ServiceWorker registration failed: ', err);
-      },
-    );
-  });
-}
-
 export const subscribeUser = async (registration) => {
   console.log("Subscribing user to push notifications...");
   if (!registration || !registration.pushManager) {

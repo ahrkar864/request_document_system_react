@@ -29,6 +29,7 @@ const panelCreate: React.FC = () => {
   const { formId } = location.state || "";
   const { reAdd } = location.state || "";
   const { panelFormId } = location.state || "";
+  console.log('panelFormId:', panelFormId);
   const [panelUse, setPanelUse] = useState<string>("use");
   const [levelValue, setLevelValue] = useState<LevelType>({
     l1Value: "",

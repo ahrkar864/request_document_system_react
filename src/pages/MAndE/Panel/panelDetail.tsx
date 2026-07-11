@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { meGeneratorDataType } from "../../../utils/meDataUtil/metype";
+import type {  meGeneratorDataType, mePanelDataType } from "../../../utils/meDataUtil/metype";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   dateFormat,
@@ -71,12 +71,12 @@ const PanelDetail: React.FC = () => {
         <div className="">
           <div className="">
             <div
-              className="h-30 w-full bg-cover bg-center  rounded-lg shadow-md mb-2 p-4 sm:p-6"
+              className="h-30 w-full bg-cover bg-center rounded-lg shadow-md mb-2 p-4 sm:p-6"
               style={{ backgroundImage: `url(${dashboardPhoto})` }}
             ></div>
             <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 mb-6 w-full ">
               {detailData?.generalForm?.remark && (
-                <h1 className="text-red-700 font-bold  text-break italic  mt-1  w:[80px] whitespace-normal break-words ">
+                <h1 className="text-red-700 font-bold text-break italic mt-1 w:[80px] whitespace-normal break-words ">
                   {detailData.generalForm.remark}
                 </h1>
               )}
@@ -197,7 +197,7 @@ const PanelDetail: React.FC = () => {
                     (detailData?.form_rejected == null ||
                       detailData?.form_rejected?.can_cel_u_ser?.name !==
                         "Yan Naing Soe") ? (
-                      ["checked", "Completed", "Cancel"].includes(
+                      ["Checked", "Completed", "Cancel"].includes(
                         detailData?.generalForm?.status ?? "",
                       ) ? (
                         <div>

@@ -1,5 +1,9 @@
 import axios from "axios";
-import type { editDataResponse, FileItem, meGeneratorDataType } from "../../../utils/meDataUtil/metype";
+import type {
+  FileItem,
+  meGeneratorDataType,
+  PanelEditResponse,
+} from "../../../utils/meDataUtil/metype";
 
 const API = axios.create({
     baseURL: "/api" ,
@@ -50,7 +54,7 @@ export const updatePanelData = async (token:string | null , formData:FormData , 
   });
 };
 
-export const editPanelData = async(token:string , id:string) : Promise<editDataResponse >=> {
+export const editPanelData = async(token:string , id:string) : Promise<PanelEditResponse >=> {
   try {
     const response = await API.get(`/me/panel/edit/${id}` , {
       headers : {Authorization: `Bearer ${token}`} ,

@@ -27,12 +27,25 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
+async function getServiceWorkerRegistration() {
+  const currentRegistration = await navigator.serviceWorker.getRegistration();
+  if (currentRegistration) {
+    return currentRegistration;
+  }
+
+  return navigator.serviceWorker.register("/sw.js");
+}
+
 export default function PushNotificationManager() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
+    if (import.meta.env.DEV) {
+      return;
+    }
+
     // Check if browser supports notifications
     if (!("Notification" in window)) {
       console.log("[Push] Notifications not supported");
@@ -66,7 +79,7 @@ export default function PushNotificationManager() {
 
   const checkSubscriptionStatus = async () => {
     try {
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await getServiceWorkerRegistration();
       const subscription = await registration.pushManager.getSubscription();
       setIsSubscribed(!!subscription);
       console.log("[Push] Subscription status:", !!subscription);
@@ -76,6 +89,10 @@ export default function PushNotificationManager() {
   };
 
   const subscribeToPush = async () => {
+    if (import.meta.env.DEV) {
+      return;
+    }
+
     try {
       console.log("[Push] Requesting notification permission...");
 
@@ -89,12 +106,7 @@ export default function PushNotificationManager() {
       }
 
       // Register service worker if not already registered
-      let registration = await navigator.serviceWorker.getRegistration();
-      if (!registration) {
-        console.log("[Push] Registering service worker...");
-        registration = await navigator.serviceWorker.register("/sw.js");
-        await navigator.serviceWorker.ready;
-      }
+      const registration = await getServiceWorkerRegistration();
 
       console.log("[Push] Service worker ready, subscribing to push...");
 

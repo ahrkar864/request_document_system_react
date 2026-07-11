@@ -23,6 +23,10 @@ export default function Navbar({ toggleSidebar }) {
   const navigate = useNavigate();
 
   const subscribeToPush = async () => {
+    if (import.meta.env.DEV) {
+      return;
+    }
+
     if (!("serviceWorker" in navigator)) {
       return;
     }

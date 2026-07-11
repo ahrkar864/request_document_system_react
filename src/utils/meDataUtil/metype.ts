@@ -49,6 +49,7 @@ export interface meGeneratorDataType {
     remark?: string;
     status?: string;
     originators?: {
+      title?: string;
       name?: string;
       departments?: {
         name?: string;
@@ -116,7 +117,8 @@ export interface FileItem {
   generator_id?: number;
   transformer_id?: number;
   solar_id?: number;
-
+  panel_id?: number;
+  water_tank_id?: number;
   file?: File | null;
   preview?: string | null;
   type?: "image" | "pdf" | "other" | null;
@@ -193,6 +195,22 @@ export interface meEvaDataType {
   eva_use?: string;
 }
 
+export interface meWaterTankDataType {
+  id?: number;
+  water_tank_date?: string;
+  water_tank_time?: string;
+  pump1_water_pressure?: string | number;
+  pump2_water_pressure?: string | number;
+  pressure_pump?: string;
+  eva_pump1?: string;
+  eva_pump2?: string;
+  eva_water_pump?: string;
+  water_supply_pipe?: string;
+  upper_tank_lower_tank?: string;
+  toilet_water_pressure?: string;
+  remark?: string;
+}
+
 export interface mePanelDataType {
   id?: number;
   panel_date?: string;
@@ -236,6 +254,98 @@ export interface SolarEditResponse {
 
 export interface EvaEditResponse {
   editData: meEvaDataType;
+  files: FileItem[];
+}
+
+export interface WaterTankDetailDataType {
+  id?: number;
+  general_form_id?: number;
+  name?: string;
+  generalForm?: {
+    id?: number;
+    form_doc_no?: string;
+    asset_type?: string;
+    form_branch?: number;
+    form_department?: number;
+    to_branch?: number;
+    to_department?: number;
+    user_id?: number;
+    receiver_id?: number;
+    form_id?: number;
+    date?: string;
+    g_remark?: string;
+    requester_name?: string;
+    total_amount?: number | null;
+    created_at?: string | null;
+    ongoing_time?: string | null;
+    updated_at?: string | Date;
+    reason?: string | number;
+    osnb_doc_no?: string | null;
+    remark?: string;
+    status?: string;
+    originators?: {
+      title?: string;
+      name?: string;
+      departments?: {
+        name?: string;
+      };
+    };
+  };
+  subForm?: {
+    id?: number | string;
+    general_form_id?: number | string;
+    sub_form_id?: number | string;
+  };
+  getChecker?: {
+    assigned_user?: {
+      title?: string;
+      name?: string;
+      department?: {
+        name?: string;
+      };
+    };
+    approval_users?: {
+      title?: string;
+      name?: string;
+      department?: {
+        name?: string;
+      };
+    };
+    created_at?: string;
+    ongoing_time?: string | null;
+    comment?: string;
+  };
+  getApprover?: {
+    created_at?: string;
+    ongoing_time?: string | null;
+    comment?: string;
+    approval_users?: {
+      title?: string;
+      name?: string;
+      department?: {
+        name?: string;
+      };
+    };
+  };
+  form?: {
+    created_at?: string;
+    ongoing_time?: string | null;
+  };
+  sendManagerAssettype?: {};
+  checker?: {};
+  approver?: {};
+  form_rejected?: {
+    can_cel_u_ser?: {
+      name?: string;
+    };
+  };
+  detailData?: meWaterTankDataType[];
+  files?: FileItem[];
+  authUserId?: {};
+}
+
+export interface WaterTankEditResponse {
+  editData: meWaterTankDataType;
   files: FileItem[];
 }
 

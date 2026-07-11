@@ -1,59 +1,115 @@
 // src/routes/router.jsx
+import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate, useParams } from "react-router-dom";
 
-import Home from "../pages/Home.jsx";
 import Layout from "../pages/layouts/Layout.jsx";
-import Search from "../pages/Search.jsx";
-import CctvRecord from "../pages/cctv/CctvRecord.jsx";
-import Dashboard from "../pages/Dashboard.jsx";
-import FilterCard from "../pages/BigDamageIssue/FilterCard.jsx";
-import CctvForm from "../pages/cctv/CctvForm.jsx";
-import Login from "../pages/auth/Login.jsx";
-import CctvIndex from "../pages/cctv/CctvIndex.jsx";
-import BigDamageIssue from "../pages/BigDamageIssue/Dashboard.jsx";
-import CctvDetails from "../pages/cctv/CctvDetails.jsx";
-import CctvEdit from "../pages/cctv/CctvEdit.jsx";
-import AutoLogin from "../context/AutoLogin.jsx";
-import Demo from "../pages/requestDiscount/index.tsx";
-import Create from "../pages/requestDiscount/create.tsx";
-import DamageAdd from "../pages/BigDamageIssue/DamageAdd.jsx";
-import DamageDetail from "../pages/BigDamageIssue/DamageDetail.jsx";
-import DamageView from "../pages/BigDamageIssue/DamageView.jsx";
 import ProtectedRoute from "../routes/ProtectedRoute.jsx";
-import DamageIssueList from "../pages/BigDamageIssue/DamageIssueList.jsx";
-import Detail from "../pages/requestDiscount/detail.js";
-import MAndE from "../pages/MAndE/MAndE.jsx";
-import Index from "../pages/MAndE/Generator/index.js";
-import GeneratorCreate from "../pages/MAndE/Generator/generatorCreate.js";
-import GeneratorDetail from "../pages/MAndE/Generator/GeneratorDetail.js";
-import GeneratorEdit from "../pages/MAndE/Generator/generatorEdit.js";
-import IndexPriceChange from "../pages/pricechanges/IndexPriceChange.jsx";
-import CreatePriceChange from "../pages/pricechanges/CreatePriceChange.jsx";
-import DetailPriceChange from "../pages/pricechanges/DetailPriceChange.jsx";
-import IndexPromotionJob from "../pages/promotionjobs/IndexPromotionJob.jsx";
-import CreatePromotionJob from "../pages/promotionjobs/CreatePromotionJob.jsx";
-import PromotionJobRunner from "../pages/promotionjobs/PromotionJobRunner.jsx";
-import PromotionJobUI from "../pages/promotionjobs/PromotionJobUI.jsx";
-import DetailPromotionJob from "../pages/promotionjobs/DetailPromotionJob.jsx";
-import TransformerIndex from "../pages/MAndE/Transformer/transformerIndex.js";
-import TransformerCreate from "../pages/MAndE/Transformer/transformerCreate.js";
-import TransformerDetail from "../pages/MAndE/Transformer/TransformerDetail.js";
-import TransformerEdit from "../pages/MAndE/Transformer/transformerEdit.js";
-import SolarIndex from "../pages/MAndE/Solar/solarIndex.js";
-import SolarCreate from "../pages/MAndE/Solar/solarCreate.js";
-import SolarDetail from "../pages/MAndE/Solar/solarDetail.js";
-import SolarEdit from "../pages/MAndE/Solar/solarEdit.js";
-import EvaIndex from "../pages/MAndE/Eva/EvaIndex.js";
-import EvaCreate from "../pages/MAndE/Eva/EvaCreate.js";
-import EvaDetail from "../pages/MAndE/Eva/EvaDetail.js";
-import EvaEdit from "../pages/MAndE/Eva/EvaEdit.js";
-import PanelIndex from "../pages/MAndE/Panel/panelIndex.js";
-import PanelCreate from "../pages/MAndE/Panel/panelCreate.js";
-import PanelDetail from "../pages/MAndE/Panel/panelDetail.js";
-import PanelEdit from "../pages/MAndE/Panel/panelEdit.js";
+
+const Home = lazy(() => import("../pages/Home.jsx"));
+const Search = lazy(() => import("../pages/Search.jsx"));
+const CctvRecord = lazy(() => import("../pages/cctv/CctvRecord.jsx"));
+const Dashboard = lazy(() => import("../pages/Dashboard.jsx"));
+const FilterCard = lazy(() => import("../pages/BigDamageIssue/FilterCard.jsx"));
+const CctvForm = lazy(() => import("../pages/cctv/CctvForm.jsx"));
+const Login = lazy(() => import("../pages/auth/Login.jsx"));
+const CctvIndex = lazy(() => import("../pages/cctv/CctvIndex.jsx"));
+const BigDamageIssue = lazy(
+  () => import("../pages/BigDamageIssue/Dashboard.jsx"),
+);
+const CctvDetails = lazy(() => import("../pages/cctv/CctvDetails.jsx"));
+const CctvEdit = lazy(() => import("../pages/cctv/CctvEdit.jsx"));
+const AutoLogin = lazy(() => import("../context/AutoLogin.jsx"));
+const Demo = lazy(() => import("../pages/requestDiscount/index.tsx"));
+const Create = lazy(() => import("../pages/requestDiscount/create.tsx"));
+const DamageAdd = lazy(() => import("../pages/BigDamageIssue/DamageAdd.jsx"));
+const DamageDetail = lazy(
+  () => import("../pages/BigDamageIssue/DamageDetail.jsx"),
+);
+const DamageView = lazy(() => import("../pages/BigDamageIssue/DamageView.jsx"));
+const DamageIssueList = lazy(
+  () => import("../pages/BigDamageIssue/DamageIssueList.jsx"),
+);
+const Detail = lazy(() => import("../pages/requestDiscount/detail.js"));
+const IndexPriceChange = lazy(
+  () => import("../pages/pricechanges/IndexPriceChange.jsx"),
+);
+const CreatePriceChange = lazy(
+  () => import("../pages/pricechanges/CreatePriceChange.jsx"),
+);
+const DetailPriceChange = lazy(
+  () => import("../pages/pricechanges/DetailPriceChange.jsx"),
+);
+const IndexPromotionJob = lazy(
+  () => import("../pages/promotionjobs/IndexPromotionJob.jsx"),
+);
+const CreatePromotionJob = lazy(
+  () => import("../pages/promotionjobs/CreatePromotionJob.jsx"),
+);
+const DetailPromotionJob = lazy(
+  () => import("../pages/promotionjobs/DetailPromotionJob.jsx"),
+);
+const MAndE = lazy(() => import("../pages/MAndE/MAndE.jsx"));
+const Index = lazy(() => import("../pages/MAndE/Generator/index.js"));
+const GeneratorCreate = lazy(
+  () => import("../pages/MAndE/Generator/generatorCreate.js"),
+);
+const GeneratorDetail = lazy(
+  () => import("../pages/MAndE/Generator/GeneratorDetail.js"),
+);
+const GeneratorEdit = lazy(
+  () => import("../pages/MAndE/Generator/generatorEdit.js"),
+);
+const TransformerIndex = lazy(
+  () => import("../pages/MAndE/Transformer/transformerIndex.js"),
+);
+const TransformerCreate = lazy(
+  () => import("../pages/MAndE/Transformer/transformerCreate.js"),
+);
+const TransformerDetail = lazy(
+  () => import("../pages/MAndE/Transformer/TransformerDetail.js"),
+);
+const TransformerEdit = lazy(
+  () => import("../pages/MAndE/Transformer/transformerEdit.js"),
+);
+const SolarIndex = lazy(() => import("../pages/MAndE/Solar/solarIndex.js"));
+const SolarCreate = lazy(() => import("../pages/MAndE/Solar/solarCreate.js"));
+const SolarDetail = lazy(() => import("../pages/MAndE/Solar/solarDetail.js"));
+const SolarEdit = lazy(() => import("../pages/MAndE/Solar/solarEdit.js"));
+const EvaIndex = lazy(() => import("../pages/MAndE/Eva/EvaIndex.js"));
+const EvaCreate = lazy(() => import("../pages/MAndE/Eva/EvaCreate.js"));
+const EvaDetail = lazy(() => import("../pages/MAndE/Eva/EvaDetail.js"));
+const EvaEdit = lazy(() => import("../pages/MAndE/Eva/EvaEdit.js"));
+const PanelIndex = lazy(() => import("../pages/MAndE/Panel/panelIndex.js"));
+const PanelCreate = lazy(() => import("../pages/MAndE/Panel/panelCreate.js"));
+const PanelDetail = lazy(() => import("../pages/MAndE/Panel/panelDetail.js"));
+const PanelEdit = lazy(() => import("../pages/MAndE/Panel/panelEdit.js"));
+const WaterTankIndex = lazy(() => import("../pages/MAndE/WaterTank/Index.js"));
+const WaterTankCreate = lazy(
+  () => import("../pages/MAndE/WaterTank/Create.js"),
+);
+const WaterTankDetail = lazy(
+  () => import("../pages/MAndE/WaterTank/Detail.js"),
+);
+const WaterTankEdit = lazy(() => import("../pages/MAndE/WaterTank/Edit.js"));
+const HandoverIndex = lazy(() => import("../pages/handover/HandoverIndex.js"));
+const HandoverEdit = lazy(() => import("../pages/handover/HandoverEdit.js"));
+const HandoverCreate = lazy(
+  () => import("../pages/handover/HandoverCreate.js"),
+);
+const HandoverDetail = lazy(
+  () => import("../pages/handover/HandoverDetail.js"),
+);
+
+const lazyElement = (Component) => (
+  <Suspense
+    fallback={<div className="p-6 text-sm text-gray-500">Loading...</div>}
+  >
+    <Component />
+  </Suspense>
+);
 const LoginRoute = () => {
   const token = localStorage.getItem("token");
-  return token ? <Navigate to="/dashboard" /> : <Login />;
+  return token ? <Navigate to="/dashboard" /> : lazyElement(Login);
 };
 
 const BigDamageRedirect = () => {
@@ -67,7 +123,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/auto-login",
-    element: <AutoLogin />,
+    element: lazyElement(AutoLogin),
   },
   {
     path: "/",
@@ -83,35 +139,35 @@ const router = createBrowserRouter([
       },
       {
         path: "dashboard",
-        element: <Dashboard />,
+        element: lazyElement(Dashboard),
       },
       {
         path: "home",
-        element: <Home />,
+        element: lazyElement(Home),
       },
       {
         path: "create",
-        element: <Create />,
+        element: lazyElement(Create),
       },
       {
         path: "search",
-        element: <Search />,
+        element: lazyElement(Search),
       },
       {
         path: "big_damage_issue",
-        element: <BigDamageIssue />,
+        element: lazyElement(BigDamageIssue),
       },
       {
         path: "big-damage-issue-add",
-        element: <DamageAdd />,
+        element: lazyElement(DamageAdd),
       },
       {
         path: "big-damage-issue-add/:id",
-        element: <DamageView />,
+        element: lazyElement(DamageView),
       },
       {
         path: "big-damage-issue-detail/:id",
-        element: <DamageDetail />,
+        element: lazyElement(DamageDetail),
       },
       {
         // Redirect notifications from underscore style to the correct URL format
@@ -120,155 +176,190 @@ const router = createBrowserRouter([
       },
       {
         path: "big-damage-issue-filter",
-        element: <FilterCard />,
+        element: lazyElement(FilterCard),
       },
       {
         path: "big-damage-issue-datalist",
-        element: <DamageIssueList />,
+        element: lazyElement(DamageIssueList),
       },
       {
         path: "cctv-request",
-        element: <CctvRecord />,
+        element: lazyElement(CctvRecord),
       },
       {
         path: "cctv-form",
-        element: <CctvForm />,
+        element: lazyElement(CctvForm),
       },
       {
         path: "cctv_record",
-        element: <CctvIndex />,
+        element: lazyElement(CctvIndex),
       },
       {
         path: "cctv-details/:id",
-        element: <CctvDetails />,
+        element: lazyElement(CctvDetails),
       },
       {
         path: "cctv-edit/:id",
-        element: <CctvEdit />,
+        element: lazyElement(CctvEdit),
       },
       {
         path: "request_discount",
-        element: <Demo />,
+        element: lazyElement(Demo),
       },
       {
         path: "request-discount-create",
-        element: <Create />,
+        element: lazyElement(Create),
       },
       {
         path: "request_discount_detail/:id",
-        element: <Detail />,
+        element: lazyElement(Detail),
       },
       {
         path: "m_and_e",
-        element: <MAndE />,
+        element: lazyElement(MAndE),
       },
       {
         path: "generator/:id",
-        element: <Index />,
+        element: lazyElement(Index),
       },
       {
         path: "generator_create",
-        element: <GeneratorCreate />,
+        element: lazyElement(GeneratorCreate),
       },
       {
         path: "me_generator_detail/:id",
-        element: <GeneratorDetail />,
+        element: lazyElement(GeneratorDetail),
       },
       {
         path: "generator_edit/:id",
-        element: <GeneratorEdit />,
+        element: lazyElement(GeneratorEdit),
       },
 
       {
         path: "transformer/:id",
-        element: <TransformerIndex />,
+        element: lazyElement(TransformerIndex),
       },
       {
         path: "transformer_create",
-        element: <TransformerCreate />,
+        element: lazyElement(TransformerCreate),
       },
       {
         path: "me_transformer_detail/:id",
-        element: <TransformerDetail />,
+        element: lazyElement(TransformerDetail),
       },
       {
         path: "transformer_edit/:id",
-        element: <TransformerEdit />,
+        element: lazyElement(TransformerEdit),
       },
       {
         path: "solar/:id",
-        element: <SolarIndex />,
+        element: lazyElement(SolarIndex),
       },
       {
         path: "solar_create",
-        element: <SolarCreate />,
+        element: lazyElement(SolarCreate),
       },
       {
         path: "me_solar_detail/:id",
-        element: <SolarDetail />,
+        element: lazyElement(SolarDetail),
       },
       {
         path: "solar_edit/:id",
-        element: <SolarEdit />,
+        element: lazyElement(SolarEdit),
       },
 
       {
         path: "evaporator/:id",
-        element: <EvaIndex />,
+        element: lazyElement(EvaIndex),
       },
       {
         path: "evaporator_create",
-        element: <EvaCreate />,
+        element: lazyElement(EvaCreate),
       },
       {
         path: "me_evaporator_detail/:id",
-        element: <EvaDetail />,
+        element: lazyElement(EvaDetail),
       },
       {
         path: "evaporator_edit/:id",
-        element: <EvaEdit />,
+        element: lazyElement(EvaEdit),
       },
 
       {
         path: "panel/:id",
-        element: <PanelIndex />,
+        element: lazyElement(PanelIndex),
       },
       {
         path: "panel_create",
-        element: <PanelCreate />,
+        element: lazyElement(PanelCreate),
       },
       {
         path: "me_panel_detail/:id",
-        element: <PanelDetail />,
+        element: lazyElement(PanelDetail),
       },
       {
         path: "panel_edit/:id",
-        element: <PanelEdit />,
+        element: lazyElement(PanelEdit),
+      },
+
+      {
+        path: "water-tank/:id",
+        element: lazyElement(WaterTankIndex),
+      },
+
+      {
+        path: "water-tank/create",
+        element: lazyElement(WaterTankCreate),
+      },
+
+      {
+        path: "water-tank-detail/:id",
+        element: lazyElement(WaterTankDetail),
+      },
+      {
+        path: "water-tank/edit/:id",
+        element: lazyElement(WaterTankEdit),
       },
       {
         path: "price_changes",
-        element: <IndexPriceChange />,
+        element: lazyElement(IndexPriceChange),
       },
       {
         path: "price_changes/create",
-        element: <CreatePriceChange />,
+        element: lazyElement(CreatePriceChange),
       },
       {
         path: "price_changes_detail/:id",
-        element: <DetailPriceChange />,
+        element: lazyElement(DetailPriceChange),
       },
       {
         path: "promotion_jobs",
-        element: <IndexPromotionJob />,
+        element: lazyElement(IndexPromotionJob),
       },
       {
         path: "promotion_jobs/create",
-        element: <CreatePromotionJob />,
+        element: lazyElement(CreatePromotionJob),
         // element: <PromotionJobRunner />,
       },
       {
         path: "promotion_jobs_detail/:id",
-        element: <DetailPromotionJob />,
+        element: lazyElement(DetailPromotionJob),
+      },
+      {
+        path: "handover",
+        element: lazyElement(HandoverIndex),
+      },
+      {
+        path: "handover/create",
+        element: lazyElement(HandoverCreate),
+      },
+      {
+        path: "handover_detail/:id",
+        element: lazyElement(HandoverDetail),
+      },
+      {
+        path: "handover_edit/:id",
+        element: lazyElement(HandoverEdit),
       },
     ],
   },

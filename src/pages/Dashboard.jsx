@@ -125,6 +125,7 @@ const Dashboard = () => {
           formsData.map(async (form) => {
             try {
               const count = await countFormNoti(token, form.id);
+              console.log('Count mtk noti', count)
               counts[form.id] = count;
               // console.log(`[MAIN_DASHBOARD_DEBUG] Form ${form.id} (${form.name}): count = ${count}`);
             } catch (error) {
@@ -165,6 +166,7 @@ const Dashboard = () => {
     "Member Issue Form": "🆔",
     "CCTV Request Form": "📹",
     "M&E Form": "⚙️",
+    "Handover Form" : "🤝",
     "Coupon Voucher": "📑",
     "Price Change Form": "💲",
     "Promotion Job Form": "🚀"
