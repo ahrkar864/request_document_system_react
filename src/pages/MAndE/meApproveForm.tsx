@@ -226,7 +226,7 @@ const MeApproveForm: React.FC<MeApproveFormProps> = ({
         
 
       {detailData?.approver === true &&
-        detailData?.generalForm?.status === "checked" && (
+        detailData?.generalForm?.status === "Checked" && (
           <>
             <h1>Remark</h1>
             <div className="grid lg:grid-cols-2   grid-cols-1 gap-6">
