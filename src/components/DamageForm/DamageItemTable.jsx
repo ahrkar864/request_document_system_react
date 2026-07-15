@@ -2172,7 +2172,39 @@ const normalizeImageEntries = (list) => {
     }
     
     setIsUpdatingSystemQty(true);
-    const payload = { general_form_id: generalFormId, form_id: formId, layout_id: layoutId };
+    // Match on-screen qty rules: System Qty 0 ⇒ effective Actual Qty 0 (display is overridden,
+    // but item.actual_qty in state may still hold the old request qty).
+    const getEffectiveActualQty = (item) => {
+      const systemQty = parseFloat(item.system_qty) || 0;
+      const rawActual = item.actual_qty;
+      const numericActual =
+        rawActual === '' || rawActual === null || rawActual === undefined
+          ? NaN
+          : parseFloat(rawActual);
+
+      if (systemQty === 0) {
+        return 0;
+      }
+      if (Number.isNaN(numericActual)) {
+        return parseFloat(item.final_qty ?? item.product_type ?? 0) || 0;
+      }
+      if (numericActual > systemQty) {
+        return systemQty;
+      }
+      return numericActual;
+    };
+
+    const payload = {
+      general_form_id: generalFormId,
+      form_id: formId,
+      layout_id: layoutId,
+      items: items.map((item) => ({
+        id: item.id || item.specific_form_id || null,
+        product_code: item.product_code,
+        actual_qty: getEffectiveActualQty(item),
+        final_qty: item.final_qty ?? item.product_type ?? 0,
+      })),
+    };
     console.log('[Update System Qty] Button clicked. generalFormId=', generalFormId, 'payload=', payload);
 
     try {
