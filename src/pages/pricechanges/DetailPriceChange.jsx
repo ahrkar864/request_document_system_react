@@ -1956,7 +1956,7 @@ export default function () {
 
                                     <div className="flex items-center gap-2 pt-6">
                                         <input type="checkbox" id="urgent_price_change" name="urgent_price_change" className="w-4 h-4 rounded text-red-600 border-gray-300 focus:ring-red-500" onChange={changeHandler} value={formState.urgent_price_change} checked={formState.urgent_price_change} />
-                                        <span className="text-sm font-bold text-red-600">Urgent Price Change <span className="text-red-600 text-md">*</span></span>
+                                        <span className="text-sm font-bold text-red-600">Urgent Price Change <span className="text-red-600 text-md">*</span> { getApprover?.comment ? `(${getApprover?.comment})` :''  }</span>
                                     </div>
 
                                     <div>
@@ -2195,6 +2195,13 @@ export default function () {
                                 !(Array.isArray(getApprover.approval_users) && getApprover.approval_users.length === 0) &&
                                 (!formRejected || formRejected.user_type === "A1") &&
                                     <>
+                                    {
+                                        getApprover.comment &&
+                                        <div className="font-bold text-red-400">
+                                            🔴 Late Approval
+                                        </div>
+                                    }
+
                                     <div className="font-semibold text-blue-900">
                                     {getApprover?.approval_users?.title}{getApprover?.approval_users?.name}
                                     </div>

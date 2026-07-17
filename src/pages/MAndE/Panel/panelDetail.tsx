@@ -197,7 +197,7 @@ const PanelDetail: React.FC = () => {
                     (detailData?.form_rejected == null ||
                       detailData?.form_rejected?.can_cel_u_ser?.name !==
                         "Yan Naing Soe") ? (
-                      ["checked", "Completed", "Cancel"].includes(
+                      ["Checked", "Completed", "Cancel"].includes(
                         detailData?.generalForm?.status ?? "",
                       ) ? (
                         <div>
