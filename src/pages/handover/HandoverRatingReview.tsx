@@ -133,12 +133,13 @@ const HandoverRatingReview: React.FC<Props> = ({ detailData }) => {
 
               {/* Review */}
 
-              <div className="mb-4">
+              { review && (<div className="mb-4">
                 <p className="text-xs text-gray-400 mb-1">Review By {item?.user?.name}</p>
                 <p className="text-sm text-gray-700 bg-white border border-gray-200 rounded-md px-3 py-2 leading-relaxed whitespace-pre-wrap break-words">
                   {review}
                 </p>
               </div>
+              )}
 
               {/* Attachments Grid */}
               {attachments.length > 0 && (

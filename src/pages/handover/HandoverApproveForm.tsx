@@ -145,6 +145,30 @@ const HandoverApproveForm: React.FC<HandoverApproveFormProps> = ({
       return;
     }
 
+    if (statusValue === "recipient_received" && rating === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Rating required",
+        text: "Please give a star rating.",
+      });
+      return;
+    }
+
+    const hasImage = photos.some(
+      (photo) =>
+        photo.type.startsWith("image/") ||
+        /\.(jpg|jpeg|png|webp)$/i.test(photo.name),
+    );
+
+    if (statusValue === "recipient_received" && !hasImage) {
+      Swal.fire({
+        icon: "warning",
+        title: "Photo required",
+        text: "Please upload at least one photo.",
+      });
+      return;
+    }
+
     const confirmMap: Record<string, string> = {
       Ongoing: "Send to Supervisor?",
       checked: "Want to check?",
@@ -182,15 +206,6 @@ const HandoverApproveForm: React.FC<HandoverApproveFormProps> = ({
         icon: "warning",
         title: "Recipient required",
         text: "Please add recipients.",
-      });
-      return;
-    }
-
-    if (statusValue === "recipient_received" && rating === 0) {
-      Swal.fire({
-        icon: "warning",
-        title: "Rating required",
-        text: "Please give a star rating.",
       });
       return;
     }
@@ -336,8 +351,9 @@ const HandoverApproveForm: React.FC<HandoverApproveFormProps> = ({
               {/* Attachment Upload */}
               <div>
                 <p className="text-sm text-gray-500 mb-1">
-                  Attachments (max:5)
-                </p>
+                  Activity ပုံထည့်ရန် (max:5)  <span className="text-red-500 text-xl">* </span>
+                </p>                      
+
                 <span className="block text-sm text-gray-500 font-normal mt-1">
                   File Type Accepts: (.xlsx, .xls, .csv, .pdf, .doc, .docx, .jpg,
                   .jpeg, .png, .webp)
