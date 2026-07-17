@@ -260,7 +260,7 @@ const HandoverTable: React.FC<TableDetailProps> = ({
                     {file.name}
                   </a>
 
-                  {isExcel && (
+                  {(isExcel || isPdf) && (
                     <Button
                       size="xs"
                       variant="light"
@@ -270,7 +270,7 @@ const HandoverTable: React.FC<TableDetailProps> = ({
                       download
                       leftSection={<IconDownload size={16} />}
                     >
-                      Download Excel File
+                      {isPdf ? "Download PDF File" : "Download Excel File"}
                     </Button>
                   )}
                 </div>
