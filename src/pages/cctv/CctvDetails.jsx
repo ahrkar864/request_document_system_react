@@ -731,7 +731,7 @@ export default function CctvDetails() {
                                 </div>
 
 
-                                {isApprover && (
+                                {/* {isApprover && (
                                     <div className="mb-6">
                                         <h4 className="font-medium mb-2">Remark</h4>
                                         <textarea
@@ -758,7 +758,7 @@ export default function CctvDetails() {
                                             </button>
                                         </div>
                                     </div>
-                                )}
+                                )} */}
 
                                 {isBranchITApprover && (
                                     <div className="mb-6">

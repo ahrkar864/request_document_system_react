@@ -24,7 +24,8 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         }
-      }
+      },
+      port : 3000,
     },
     build: {
       // chunk size warning limit တင်ကြိုတိုးပေးထား (warning ရှောင်ဖို့)
