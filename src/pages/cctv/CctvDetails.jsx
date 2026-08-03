@@ -21,7 +21,6 @@ export default function CctvDetails() {
     const [recordDetails, setRecordDetails] = useState(null);
     const [isApprover, setIsApprover] = useState(false);
     const [isBranchITApprover, setIsBranchITApprover] = useState(false);
-    const [isManager, setIsManager] = useState(false);
     const actualUserId = user?.id;
     const route = "cctv_record";
     const form_id = 15;
@@ -86,21 +85,6 @@ export default function CctvDetails() {
         return current_user && isBranchITUser;
     };
 
-    const checkManager = () => {
-        if (!recordDetails || recordDetails.form.status !== 'Checked') return false;    
-
-        const approvalProcessUsers = recordDetails.approval_process_users;
-        if (!approvalProcessUsers) return false;
-
-        const current_user = approvalProcessUsers.find(
-            u => u.user_type === 'A2' &&
-                u.general_form_id === recordDetails.form.id &&
-                u.admin_id === user.id
-        );
-        const isManager = user?.role_id === 'Approver';
-        return current_user && isManager || user?.employee_number === '000-000548';
-    }
-
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!id || !token || hasFetchedInitial.current) return;
@@ -141,7 +125,6 @@ export default function CctvDetails() {
     useEffect(() => {
         setIsApprover(checkApprover());
         setIsBranchITApprover(checkBranchITApprover());
-        setIsManager(checkManager());
     }, [recordDetails, user]);
 
 
@@ -228,8 +211,6 @@ export default function CctvDetails() {
     const handleCancel = () => handleSubmit('Cancel');
     const handleNeedEdit = () => handleSubmit('Need To Edit');
     const handleBMApprove = () => handleSubmit('BM Approved');
-    const handleComplete = () => handleSubmit('Completed');
-    const ApproveBackToPrevious = () => handleSubmit('Back To Previous');
 
     const formDocno = recordDetails?.form?.form_doc_no ? recordDetails.form.form_doc_no : '';
 
@@ -362,7 +343,6 @@ export default function CctvDetails() {
                                             </p>
                                             <p>
                                                 2. <strong>Case Type</strong> ရွေးချယ်ခြင်းများကို{' '}
-                                                <strong>SD Manager</strong> နှင့် သက်ဆိုင်ရာ{' '}
                                                 <strong>Branch IT</strong> များပြင်ဆင်နိုင်ခြင်း
                                             </p>
                                             <p>
@@ -789,47 +769,6 @@ export default function CctvDetails() {
                                     </div>
                                 )}
 
-                                {isManager && (
-
-                                    <div className="mb-6">
-                                        <h4 className="font-medium mb-2">Remark</h4>
-                                        <textarea
-                                            value={remark}
-                                            onChange={(e) => setRemark(e.target.value)}
-                                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Write remark about this and please be careful not more than 200 characters."
-                                            rows={3}
-                                            maxLength={200}
-                                        />
-
-                                        <div className="mt-2 flex flex-wrap gap-2">
-                                            <button
-                                                onClick={handleComplete}
-                                                disabled={isSubmitting}
-                                                className="bg-green-400 hover:bg-green-500 text-white font-bold py-2 px-4 rounded cursor-pointer"
-                                            >
-                                                {isSubmitting ? 'Processing...' : 'Approve'}
-                                            </button>
-                                            <button
-                                                onClick={handleCancel}
-                                                className="bg-red-400 hover:bg-red-500 text-white font-bold py-2 px-4 rounded cursor-pointer"
-                                            >
-                                                Cancel
-                                            </button>
-                                            {route === 'cctv_record' && isManager && recordDetails?.status === 'Approved' && (
-                                                <button
-                                                    onClick={ApproveBackToPrevious}
-                                                    className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded cursor-pointer"
-                                                >
-                                                    Back to Previous
-                                                </button>
-                                            )}
-                                        </div>
-
-                                    </div>
-
-                                )}
-
                             </div>
 
 
@@ -888,7 +827,7 @@ export default function CctvDetails() {
                             )}
 
 
-                            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 mt-6">
+                            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 mt-6">
                                 <div className="space-y-1">
                                     <p className="text-gray-500">Staff / Eyewitness</p>
                                     <p className="text-sm text-gray-800 font-semibold">
@@ -983,44 +922,6 @@ export default function CctvDetails() {
                                             {recordDetails.acknowledger?.comment && (
                                                 <p className="italic text-blue-500 text-sm">
                                                     "{recordDetails.acknowledger.comment}"
-                                                </p>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <p className="text-xs text-gray-400 opacity-25">-</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-1">
-                                    <p className="text-gray-500">
-                                        {recordDetails?.manager &&
-                                            (
-                                                recordDetails?.form?.status === 'Completed' ||
-                                                (recordDetails?.form?.status === 'Cancel' && recordDetails?.manager?.status !== 'Cancel')
-                                            )
-                                            ? 'Acknowledged By'
-                                            : 'Acknowledged by SD Manager'}
-                                    </p>
-
-                                    {recordDetails?.manager &&
-                                        (
-                                            recordDetails?.form?.status === 'Completed' ||
-                                            (recordDetails?.form?.status === 'Cancel' && recordDetails?.manager?.status !== 'Cancel')
-                                        ) ? (
-                                        <>
-                                            <p className="text-sm text-gray-800 font-semibold">
-                                                {recordDetails.manager?.title ? `${recordDetails.manager.title}.` : ''}
-                                                {recordDetails.manager?.name ?? ''}
-                                            </p>
-                                            <p className="text-sm text-gray-700">
-                                                {recordDetails.manager?.department ?? ''}
-                                            </p>
-                                            <p className="text-xs text-gray-400">
-                                                {recordDetails.manager?.created_at ? formatDateTime(recordDetails.manager.created_at) : ''}
-                                            </p>
-                                            {recordDetails.manager?.comment && (
-                                                <p className="italic text-blue-500 text-sm">
-                                                    "{recordDetails.manager.comment}"
                                                 </p>
                                             )}
                                         </>

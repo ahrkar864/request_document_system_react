@@ -28,7 +28,6 @@ export default function CctvIndex() {
     const statusOptions = [
         { value: "Ongoing", label: "Ongoing" },
         { value: "BM Approved", label: "BM Approved" },
-        { value: "Checked", label: "Checked" },
         { value: "Completed", label: "Completed" },
         { value: "Cancel", label: "Cancel" },
     ];
