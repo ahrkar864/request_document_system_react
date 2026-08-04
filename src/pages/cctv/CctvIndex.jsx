@@ -28,7 +28,6 @@ export default function CctvIndex() {
     const statusOptions = [
         { value: "Ongoing", label: "Ongoing" },
         { value: "BM Approved", label: "BM Approved" },
-        { value: "Checked", label: "Checked" },
         { value: "Completed", label: "Completed" },
         { value: "Cancel", label: "Cancel" },
     ];
@@ -397,7 +396,9 @@ export default function CctvIndex() {
                                                 {UserNotification.some(noti =>
                                                     noti.form_id === item.form_id &&
                                                     noti.specific_form_id === item.id &&
-                                                    noti.form_doc_no === item.form_doc_no
+                                                    noti.form_doc_no === item.form_doc_no && 
+                                                    user?.employee_number !== "000-000024"
+            
                                                 ) && (
                                                         <span className="inline-flex items-center justify-center w-3.5 h-3 rounded bg-red-600 text-white text-[10px] leading-none ml-1">
                                                             ...
@@ -489,8 +490,10 @@ export default function CctvIndex() {
                                                 {UserNotification?.some(noti =>
                                                     noti.form_id === item.form_id &&
                                                     noti.specific_form_id === item.id &&
-                                                    noti.form_doc_no === item.form_doc_no
+                                                    noti.form_doc_no === item.form_doc_no 
+                                                    // user?.employee_number !== "000-000024"
                                                 ) && (
+                                                        
                                                         <span
                                                             title="New Notification"
                                                             className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-600 text-white text-xs"
