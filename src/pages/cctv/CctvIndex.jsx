@@ -393,7 +393,7 @@ export default function CctvIndex() {
                                             </td>
                                             <td className="py-2 px-4 border-b text-blue-600 font-medium">
                                                 {item.form_doc_no}
-                                                {UserNotification.some(noti =>
+                                                {/* {UserNotification.some(noti =>
                                                     noti.form_id === item.form_id &&
                                                     noti.specific_form_id === item.id &&
                                                     noti.form_doc_no === item.form_doc_no
@@ -401,7 +401,7 @@ export default function CctvIndex() {
                                                         <span className="inline-flex items-center justify-center w-3.5 h-3 rounded bg-red-600 text-white text-[10px] leading-none ml-1">
                                                             ...
                                                         </span>
-                                                    )}
+                                                    )} */}
                                             </td>
                                             <td className="py-2 px-4 border-b">
                                                 {item.branch_name ?? item.from_branches?.branch_name ?? branches.find(b => b.id == item.from_branch)?.branch_name ?? '—'}
