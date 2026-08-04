@@ -658,7 +658,7 @@ export default function CctvDetails() {
                                                 </div>
 
                                                 {/* Edit button */}
-                                                {(isApprover || isBranchITApprover || user?.employee_number === '000-000548') && (
+                                                {((isApprover && user?.employee_number !== "000-000024") || isBranchITApprover || user?.employee_number === '000-000548') && (
                                                     <div className="mt-4">
                                                         <Link
                                                             to={`/cctv-edit/${item.id}`}
