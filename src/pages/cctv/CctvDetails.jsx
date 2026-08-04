@@ -420,7 +420,7 @@ export default function CctvDetails() {
                                                 {/* {isApprover || isBranchITApprover || user?.employee_number === '000-000024' && (
                                         <th className="border p-1 sm:p-2 hidden lg:table-cell">Action</th>
                                     )} */}
-                                                {((isApprover && user?.employee_number !== "000-000024") || isBranchITApprover || user?.employee_number === '000-000548') && (
+                                                {((isApprover && user?.employee_number !== "000-000024") || (isBranchITApprover && user?.employee_number !== "000-000024") || user?.employee_number === '000-000548') && (
                                                     <th className="border p-1 sm:p-2 hidden lg:table-cell">Action</th>
                                                 )}
                                             </tr>
@@ -658,7 +658,7 @@ export default function CctvDetails() {
                                                 </div>
 
                                                 {/* Edit button */}
-                                                {((isApprover && user?.employee_number !== "000-000024") || isBranchITApprover || user?.employee_number === '000-000548') && (
+                                                {((isApprover && user?.employee_number !== "000-000024") || (isBranchITApprover && user?.employee_number !== "000-000024")  || user?.employee_number === '000-000548') && (
                                                     <div className="mt-4">
                                                         <Link
                                                             to={`/cctv-edit/${item.id}`}
