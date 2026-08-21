@@ -118,7 +118,6 @@ export default function () {
     );
     
     const checkOverdueForm = (currentDateObj, effectiveDateObj) => { 
-        return false;
         currentDateObj.setHours(0, 0, 0, 0);
         effectiveDateObj.setHours(0, 0, 0, 0);
 
