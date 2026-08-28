@@ -31,6 +31,8 @@ export default function HandoverDetail() {
   const [categories] = useState<Category[]>([
     { value: "cover", name: "Cover" },
     { value: "cctv", name: "CCTV" },
+    { value: "computer", name: "Computer" },
+    { value: "pa_system", name: "PA System" },
     { value: "power_device", name: "Power Device" },
     { value: "walkie", name: "Walkie" },
     { value: "ph_and_sim", name: "Ph & Sim" },
@@ -178,6 +180,10 @@ export default function HandoverDetail() {
       { value: "cctv_net_pa_lyt", name: "CCTV, Net, PA Lyt" },
       { value: "cctv_list", name: "CCTV List" },
     ],
+    pa_system: [
+      { value: "speaker_list", name: "Speaker List" },
+      { value: "speaker_maps", name: "Speaker Maps" },
+    ],
   };
 
   const getModules = (
@@ -291,8 +297,8 @@ export default function HandoverDetail() {
                       Attach File{" "}
                       <span className="text-red-500 text-xl">* </span>
                       <span className="block text-sm text-gray-500 font-normal mt-1">
-                       File Type Accepts: (.xlsx, .xls, .csv, .pdf, .doc, .docx .jpg, .jpeg, .png,
-                        .webp)
+                        File Type Accepts: (.xlsx, .xls, .csv, .pdf, .doc, .docx
+                        .jpg, .jpeg, .png, .webp)
                       </span>
                     </label>
                     <input
